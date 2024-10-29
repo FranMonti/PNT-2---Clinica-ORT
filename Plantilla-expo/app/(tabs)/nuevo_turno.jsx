@@ -44,17 +44,18 @@ export default function NuevoTurno() {
   };
 
   const atras = () => {
+    setMostrarCalendario(false); 
     if (mostrarDoctores) {
       setMostrarDoctores(false);
       setEspecialidadSeleccionada(null);
       setTitulo('Nuevo Turno');
-    } else {
-      setMostrarCalendario(false); 
-    }
+    } 
   };
 
   const alternarCalendario = () => {
     setMostrarCalendario(!mostrarCalendario);
+    console.log(!mostrarCalendario);
+    
   };
 
   return (
