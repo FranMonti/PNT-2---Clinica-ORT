@@ -1,41 +1,108 @@
-import React, { useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
-import Icono from 'react-native-vector-icons/Ionicons';
-import { Calendar } from 'react-native-calendars'; 
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
+import Icono from "react-native-vector-icons/Ionicons";
+import { Calendar } from "react-native-calendars";
 
 const datosDoctores = {
-  'Ginecología': [
-    { id: '1', nombre: 'Dr. Ana López', distancia: '0.3 km' },
-    { id: '2', nombre: 'Dr. Carlos Martínez', distancia: '0.7 km' },
-    { id: '3', nombre: 'Dra. Sofia Ramírez', distancia: '1.1 km' },
+  Ginecología: [
+    { id: "1", nombre: "Dr. Ana López", distancia: "0.3 km" },
+    { id: "2", nombre: "Dr. Carlos Martínez", distancia: "0.7 km" },
+    { id: "3", nombre: "Dra. Sofia Ramírez", distancia: "1.1 km" },
   ],
-  'Cardiología': [
-    { id: '1', nombre: 'Dr. Javier Gómez', distancia: '0.4 km' },
-    { id: '2', nombre: 'Dra. Lucia Fernández', distancia: '1.2 km' },
-    { id: '3', nombre: 'Dr. Roberto Torres', distancia: '2.0 km' },
+  Cardiología: [
+    { id: "1", nombre: "Dr. Javier Gómez", distancia: "0.4 km" },
+    { id: "2", nombre: "Dra. Lucia Fernández", distancia: "1.2 km" },
+    { id: "3", nombre: "Dr. Roberto Torres", distancia: "2.0 km" },
   ],
-  'Dermatología': [
-    { id: '1', nombre: 'Dr. Hugo Sánchez', distancia: '0.5 km' },
-    { id: '2', nombre: 'Dra. Paula Díaz', distancia: '1.5 km' },
+  Dermatología: [
+    { id: "1", nombre: "Dr. Hugo Sánchez", distancia: "0.5 km" },
+    { id: "2", nombre: "Dra. Paula Díaz", distancia: "1.5 km" },
   ],
-  'Pediatría': [
-    { id: '1', nombre: 'Dra. Elena Castro', distancia: '0.6 km' },
-    { id: '2', nombre: 'Dr. Samuel Rivera', distancia: '1.8 km' },
+  Pediatría: [
+    { id: "1", nombre: "Dra. Elena Castro", distancia: "0.6 km" },
+    { id: "2", nombre: "Dr. Samuel Rivera", distancia: "1.8 km" },
   ],
 };
 
 export default function NuevoTurno() {
-  const [especialidadSeleccionada, setEspecialidadSeleccionada] = useState(null);
+  const [especialidadSeleccionada, setEspecialidadSeleccionada] =
+    useState(null);
   const [mostrarDoctores, setMostrarDoctores] = useState(false);
-  const [mostrarCalendario, setMostrarCalendario] = useState(false); 
-  const [titulo, setTitulo] = useState('Nuevo Turno');
+  const [mostrarCalendario, setMostrarCalendario] = useState(false);
+  const [titulo, setTitulo] = useState("Nuevo Turno");
+  const [selectedDay, setSelectedDay] = useState(null);
+  const [horasDisponibles, setHorasDisponibles] = useState([]);
+  const [mostrarFelicitacion, setMostrarFelicitacion] = useState(false);
 
   const especialidades = [
-    { id: '1', especialidad: 'Ginecología', imagen: require('../(tabs)/especialidad_imagenes/ginecologia.png') },
-    { id: '2', especialidad: 'Cardiología', imagen: require('../(tabs)/especialidad_imagenes/cardiologia.png') },
-    { id: '3', especialidad: 'Dermatología', imagen: require('../(tabs)/especialidad_imagenes/dermatologia.png') },
-    { id: '4', especialidad: 'Pediatría', imagen: require('../(tabs)/especialidad_imagenes/pediatria.png') },
+    {
+      id: "1",
+      especialidad: "Ginecología",
+      imagen: require("../(tabs)/especialidad_imagenes/ginecologia.png"),
+    },
+    {
+      id: "2",
+      especialidad: "Cardiología",
+      imagen: require("../(tabs)/especialidad_imagenes/cardiologia.png"),
+    },
+    {
+      id: "3",
+      especialidad: "Dermatología",
+      imagen: require("../(tabs)/especialidad_imagenes/dermatologia.png"),
+    },
+    {
+      id: "4",
+      especialidad: "Pediatría",
+      imagen: require("../(tabs)/especialidad_imagenes/pediatria.png"),
+    },
   ];
+
+  const generarHorarios = (esHoy) => {
+    const horarios = [];
+    let hora = 9;
+    let minuto = 0;
+
+    const ahora = new Date();
+    const horaActual = ahora.getHours();
+    const minutoActual = ahora.getMinutes();
+
+    while (hora < 18 || (hora === 17 && minuto <= 30)) {
+      if (
+        !esHoy ||
+        hora > horaActual ||
+        (hora === horaActual && minuto > minutoActual)
+      ) {
+        const formatoHora = `${hora.toString().padStart(2, "0")}:${minuto
+          .toString()
+          .padStart(2, "0")}`;
+        horarios.push(formatoHora);
+      }
+
+      minuto += 30;
+      if (minuto === 60) {
+        minuto = 0;
+        hora++;
+      }
+    }
+
+    return horarios;
+  };
+
+  const onDayPress = (day) => {
+    const hoy = new Date().toISOString().split("T")[0];
+    const esHoy = day.dateString === hoy;
+
+    setSelectedDay(day.dateString);
+    setHorasDisponibles(generarHorarios(esHoy));
+  };
 
   const manejarSeleccionEspecialidad = (especialidad) => {
     setEspecialidadSeleccionada(especialidad);
@@ -44,24 +111,34 @@ export default function NuevoTurno() {
   };
 
   const atras = () => {
-    setMostrarCalendario(false); 
+    setMostrarCalendario(false);
     if (mostrarDoctores) {
       setMostrarDoctores(false);
       setEspecialidadSeleccionada(null);
-      setTitulo('Nuevo Turno');
-    } 
+      setTitulo("Nuevo Turno");
+    }
   };
 
   const alternarCalendario = () => {
     setMostrarCalendario(!mostrarCalendario);
     console.log(!mostrarCalendario);
-    
+  };
+
+  const today = new Date().toLocaleDateString("en-CA");
+
+  const handleConfirmarTurno = () => {
+    setMostrarFelicitacion(true);
   };
 
   return (
     <View style={styles.contenedor}>
       <View style={styles.cabecera}>
-        <Icono name="chevron-back-outline" size={24} color="#000" onPress={atras} />
+        <Icono
+          name="chevron-back-outline"
+          size={24}
+          color="#000"
+          onPress={atras}
+        />
         <Text style={styles.titulo}>{titulo}</Text>
       </View>
 
@@ -77,17 +154,29 @@ export default function NuevoTurno() {
           keyExtractor={(item) => item.id}
           numColumns={2}
           renderItem={({ item }) => (
-            <TouchableOpacity style={styles.tarjeta} onPress={() => manejarSeleccionEspecialidad(item.especialidad)}>
+            <TouchableOpacity
+              style={styles.tarjeta}
+              onPress={() => manejarSeleccionEspecialidad(item.especialidad)}
+            >
               <View style={styles.contenidoTarjeta}>
-                {item.imagen && <Image source={item.imagen} style={styles.imagenPlaceholder} />}
-                <Text style={styles.textoEspecialidad}>{item.especialidad}</Text>
+                {item.imagen && (
+                  <Image
+                    source={item.imagen}
+                    style={styles.imagenPlaceholder}
+                  />
+                )}
+                <Text style={styles.textoEspecialidad}>
+                  {item.especialidad}
+                </Text>
               </View>
             </TouchableOpacity>
           )}
         />
       ) : (
         <View style={styles.contenedorDoctores}>
-          <Text style={styles.tituloEspecialidad}>{especialidadSeleccionada}</Text>
+          <Text style={styles.tituloEspecialidad}>
+            {especialidadSeleccionada}
+          </Text>
           <FlatList
             data={datosDoctores[especialidadSeleccionada]}
             keyExtractor={(item) => item.id}
@@ -99,7 +188,10 @@ export default function NuevoTurno() {
                   <TouchableOpacity style={styles.boton}>
                     <Text style={styles.textoBoton}>Adjuntar</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.boton} onPress={alternarCalendario}>
+                  <TouchableOpacity
+                    style={styles.boton}
+                    onPress={alternarCalendario}
+                  >
                     <Text style={styles.textoBoton}>Ver Agenda</Text>
                   </TouchableOpacity>
                 </View>
@@ -111,15 +203,73 @@ export default function NuevoTurno() {
 
       {mostrarCalendario && (
         <View style={styles.contenedorCalendario}>
+          <View style={styles.headerHoras}>
+            <Text style={styles.textoSeleccionHorario}>Seleccione día</Text>
+            <TouchableOpacity
+              onPress={() => setMostrarCalendario(false)}
+              style={styles.botonCerrar}
+            >
+              <Text style={styles.textoBotonCerrar}>Cerrar</Text>
+            </TouchableOpacity>
+          </View>
           <Calendar
-            current={new Date().toISOString().split('T')[0]}
-            onDayPress={(day) => { console.log('Día seleccionado', day); }}
-            monthFormat={'MMMM yyyy'}
-            onMonthChange={(month) => { console.log('Mes cambiado', month); }}
+            current={new Date().toLocaleDateString("en-CA")}
+            minDate={new Date().toLocaleDateString("en-CA")}
+            onDayPress={(day) => {
+              setSelectedDay(day.dateString);
+              setHorasDisponibles(generarHorarios());
+            }}
+            monthFormat={"MMMM yyyy"}
           />
-          <Text style={styles.etiquetaMes}>
-            {new Date().toLocaleString('default', { month: 'long' })} {new Date().getFullYear()}
-          </Text>
+        </View>
+      )}
+
+      {selectedDay && (
+        <View style={styles.contenedorHoras}>
+          <View style={styles.headerHoras}>
+            <Text style={styles.textoSeleccionHorario}>Seleccione horario</Text>
+            <TouchableOpacity
+              onPress={() => setSelectedDay(null)}
+              style={styles.botonCerrarHoras}
+            >
+              <Text style={styles.textoBotonCerrar}>Cerrar</Text>
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            data={horasDisponibles}
+            keyExtractor={(item, index) => index.toString()}
+            contentContainerStyle={{ paddingTop: 10 }}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.botonHora}
+                onPress={() => setMostrarFelicitacion(true)}
+              >
+                <Text style={styles.textoHora}>{item}</Text>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
+      )}
+
+      {mostrarFelicitacion && (
+        <View style={styles.overlay}>
+          <View style={styles.modal}>
+            <Text style={styles.tituloFelicitacion}>¡Felicitaciones!</Text>
+            <Text style={styles.textoFelicitacion}>
+              Has seleccionado tu turno exitosamente.
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                setMostrarFelicitacion(false);
+                setSelectedDay(null);
+                setMostrarDoctores(false);
+                setMostrarCalendario(false);
+              }}
+              style={styles.botonCerrarModal}
+            >
+              <Text style={styles.textoBotonCerrarModal}>Cerrar</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
     </View>
@@ -129,42 +279,43 @@ export default function NuevoTurno() {
 const styles = StyleSheet.create({
   contenedor: {
     flex: 1,
-    backgroundColor: '#f0f8ff',
+    backgroundColor: "#f0f8ff",
     padding: 10,
+    paddingTop: 50,
   },
   cabecera: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 10,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 10,
     borderRadius: 8,
     elevation: 2,
   },
   titulo: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginLeft: 10,
   },
   inputBusqueda: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderRadius: 8,
     padding: 10,
     marginBottom: 10,
   },
   tarjeta: {
-    backgroundColor: '#b3e5fc',
+    backgroundColor: "#b3e5fc",
     borderRadius: 10,
     padding: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     margin: 5,
-    width: '45%',
+    width: "45%",
     aspectRatio: 1,
   },
   contenidoTarjeta: {
-    alignItems: 'center',
+    alignItems: "center",
     padding: 10,
   },
   imagenPlaceholder: {
@@ -181,49 +332,167 @@ const styles = StyleSheet.create({
   },
   tituloEspecialidad: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 10,
   },
   tarjetaDoctor: {
-    backgroundColor: '#b3e5fc',
+    backgroundColor: "#b3e5fc",
     borderRadius: 10,
     padding: 10,
     marginBottom: 10,
   },
   nombreDoctor: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   distanciaDoctor: {
     fontSize: 14,
-    color: '#888',
+    color: "#888",
   },
   contenedorBotones: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 10,
   },
   boton: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 5,
     padding: 10,
-    width: '45%',
-    alignItems: 'center',
+    width: "45%",
+    alignItems: "center",
   },
   textoBoton: {
-    color: '#007aff',
+    color: "#007aff",
   },
   contenedorCalendario: {
-    marginTop: 10, 
-    padding: 10,
-    backgroundColor: '#fff',
+    position: "absolute",
+    width: "80%",
+    height: "50%",
+    top: "45%",
+    left: "13%",
+    backgroundColor: "#fff",
     borderRadius: 8,
+    padding: 10,
     elevation: 2,
+    zIndex: 10,
   },
+
   etiquetaMes: {
     fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
     marginTop: 10,
+  },
+  botonCerrar: {
+    alignSelf: "flex-end",
+    backgroundColor: "#ff5c5c",
+    borderRadius: 5,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+  },
+  textoBotonCerrar: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  contenedorHoras: {
+    marginTop: 20,
+  },
+  textoSeleccionDia: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  contenedorHoras: {
+    position: "absolute",
+    top: "45%",
+    left: "13%",
+    width: "80%",
+    height: "50%",
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    padding: 10,
+    paddingTop: 20,
+    elevation: 3,
+    zIndex: 20,
+  },
+  botonCerrar: {
+    alignSelf: "flex-end",
+    backgroundColor: "#ff5c5c",
+    borderRadius: 5,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+  },
+  botonCerrarHoras: {
+    alignSelf: "flex-end",
+    backgroundColor: "#ff5c5c",
+    borderRadius: 5,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+  },
+  textoBotonCerrar: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  botonHora: {
+    backgroundColor: "#b3e5fc",
+    borderRadius: 8,
+    padding: 15,
+    marginVertical: 5,
+    alignItems: "center",
+  },
+  textoHora: {
+    fontSize: 16,
+    color: "#007aff",
+  },
+  headerHoras: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  textoSeleccionHorario: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "110%",
+    height: "110%",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1000,
+  },
+  modal: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    textAlign: "center",
+    width: "80%",
+    alignItems: "center",
+    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
+  },
+  tituloFelicitacion: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  textoFelicitacion: {
+    fontSize: 16,
+    marginBottom: 20,
+  },
+  botonCerrarModal: {
+    backgroundColor: "#007bff",
+    padding: 10,
+    borderRadius: 5,
+  },
+  textoBotonCerrarModal: {
+    color: "#fff",
+    fontSize: 16,
   },
 });
