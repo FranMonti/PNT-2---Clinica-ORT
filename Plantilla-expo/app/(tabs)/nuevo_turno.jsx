@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {
+  Alert,
   View,
   Text,
   FlatList,
@@ -10,6 +11,8 @@ import {
 } from "react-native";
 import Icono from "react-native-vector-icons/Ionicons";
 import { Calendar } from "react-native-calendars";
+import { Animated } from 'react-native';
+
 
 const datosDoctores = {
   Ginecología: [
@@ -35,12 +38,14 @@ const datosDoctores = {
 export default function NuevoTurno() {
   const [especialidadSeleccionada, setEspecialidadSeleccionada] =
     useState(null);
+  const [doctorSeleccionado, setDoctorSeleccionado] = useState("");
   const [mostrarDoctores, setMostrarDoctores] = useState(false);
   const [mostrarCalendario, setMostrarCalendario] = useState(false);
   const [titulo, setTitulo] = useState("Nuevo Turno");
   const [selectedDay, setSelectedDay] = useState(null);
+  const [selectedTime, setSelectedTime] = useState("");
   const [horasDisponibles, setHorasDisponibles] = useState([]);
-  const [mostrarFelicitacion, setMostrarFelicitacion] = useState(false);
+  const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
 
   const especialidades = [
     {
@@ -121,13 +126,16 @@ export default function NuevoTurno() {
 
   const alternarCalendario = () => {
     setMostrarCalendario(!mostrarCalendario);
-    console.log(!mostrarCalendario);
   };
 
-  const today = new Date().toLocaleDateString("en-CA");
+  const seleccionarDoctor = (doctor) => {
+    setDoctorSeleccionado(doctor.nombre);
+    alternarCalendario();
+  };
 
-  const handleConfirmarTurno = () => {
-    setMostrarFelicitacion(true);
+  const seleccionarHora = (hora) => {
+    setSelectedTime(hora);
+    setMostrarConfirmacion(true);
   };
 
   return (
@@ -190,7 +198,7 @@ export default function NuevoTurno() {
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.boton}
-                    onPress={alternarCalendario}
+                    onPress={() => seleccionarDoctor(item)}
                   >
                     <Text style={styles.textoBoton}>Ver Agenda</Text>
                   </TouchableOpacity>
@@ -242,7 +250,7 @@ export default function NuevoTurno() {
             renderItem={({ item }) => (
               <TouchableOpacity
                 style={styles.botonHora}
-                onPress={() => setMostrarFelicitacion(true)}
+                onPress={() => seleccionarHora(item)}
               >
                 <Text style={styles.textoHora}>{item}</Text>
               </TouchableOpacity>
@@ -251,24 +259,55 @@ export default function NuevoTurno() {
         </View>
       )}
 
-      {mostrarFelicitacion && (
+      {mostrarConfirmacion && (
         <View style={styles.overlay}>
           <View style={styles.modal}>
-            <Text style={styles.tituloFelicitacion}>¡Felicitaciones!</Text>
-            <Text style={styles.textoFelicitacion}>
-              Has seleccionado tu turno exitosamente.
+            <Text style={styles.tituloConfirmacion}>
+              Verifique su Nuevo Turno
             </Text>
-            <TouchableOpacity
-              onPress={() => {
-                setMostrarFelicitacion(false);
-                setSelectedDay(null);
-                setMostrarDoctores(false);
-                setMostrarCalendario(false);
-              }}
-              style={styles.botonCerrarModal}
-            >
-              <Text style={styles.textoBotonCerrarModal}>Cerrar</Text>
-            </TouchableOpacity>
+            <Text style={styles.textoConfirmacion}>
+              {"\n"}
+              Especialidad: {especialidadSeleccionada}
+              {"\n"}
+              Doctor: {doctorSeleccionado}
+              {"\n"}
+              Fecha: {selectedDay}
+              {"\n"}
+              Hora: {selectedTime}
+            </Text>
+            <View style={{ flexDirection: "row", justifyContent: "center" }}>
+              <TouchableOpacity
+                onPress={() => {
+                  setMostrarConfirmacion(false);
+                  setSelectedDay(null);
+                  setDoctorSeleccionado("");
+                  setSelectedTime("");
+                  setEspecialidadSeleccionada("");
+                  setMostrarDoctores(false);
+                  setMostrarCalendario(false);
+
+                  Alert.alert(
+                    "Confirmación de Turno",
+                    "SU TURNO HA SIDO GUARDADO EXITOSAMENTE!",
+                    [
+                      { text: "OK", onPress: () => console.log("Turno guardado") }
+                    ]
+                  );
+                }}
+                style={styles.botonConfirmar}
+              >
+                <Text style={styles.textoBotonBlanco}>Confirmo</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setMostrarCalendario(true); 
+                  setMostrarConfirmacion(false);
+                }}
+                style={styles.botonAtras}
+              >
+                <Text style={styles.textoBotonBlanco}>Atrás</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       )}
@@ -282,6 +321,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f8ff",
     padding: 10,
     paddingTop: 50,
+    paddingLeft: 20,
   },
   cabecera: {
     flexDirection: "row",
@@ -477,12 +517,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
   },
-  tituloFelicitacion: {
+  tituloConfirmacion: {
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 10,
   },
-  textoFelicitacion: {
+  textoConfirmacion: {
     fontSize: 16,
     marginBottom: 20,
   },
@@ -495,4 +535,22 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
   },
+  botonConfirmar: {
+    backgroundColor: "green",
+    padding: 10,
+    margin: 10,
+    borderRadius: 5,
+  },
+  botonAtras: {
+    backgroundColor: "red",
+    padding: 10,
+    margin: 10,
+    borderRadius: 5,
+  },
+  textoBotonBlanco: {
+    color: 'white',
+  textAlign: 'center',
+  },
+  
 });
+
