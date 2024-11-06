@@ -138,6 +138,34 @@ export default function NuevoTurno() {
     setMostrarConfirmacion(true);
   };
 
+
+  const crearTurno = async () => {
+    const nuevoTurno = {
+      especialidad: especialidadSeleccionada,
+      doctor: doctorSeleccionado,
+      fecha: selectedDay,
+      hora: selectedTime,
+    };
+  
+    try {
+      const response = await fetch('https://672982836d5fa4901b6d6322.mockapi.io/api/bd/Turno', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(nuevoTurno),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Error al crear el turno");
+      }
+  
+      const data = await response.json();
+      console.log("Turno creado:", data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
   return (
     <View style={styles.contenedor}>
       <View style={styles.cabecera}>
@@ -285,6 +313,8 @@ export default function NuevoTurno() {
                   setEspecialidadSeleccionada("");
                   setMostrarDoctores(false);
                   setMostrarCalendario(false);
+
+                  crearTurno();
 
                   Alert.alert(
                     "Confirmación de Turno",
