@@ -11,6 +11,8 @@ import {
 } from "react-native";
 import { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 export default function Login() {
   const [esLogin, setEsLogin] = useState(false);
@@ -48,17 +50,18 @@ export default function Login() {
   const handleLogin = async () => {
     try {
       const response = await fetch("https://67310dbe7aaf2a9aff0fb8c5.mockapi.io/Datos-Usuario");
-
+  
       if (!response.ok) {
         console.error("Error en la respuesta:", response.status);
         alert("Error al conectar con el servidor.");
         return;
       }
-
+  
       const data = await response.json();
       const user = data.find((u) => u.nombreUsuario === usuario && u.password === password);
-
+  
       if (user) {
+        await AsyncStorage.setItem('PacienteId', user.id); 
         alert("Login Conseguido");
         router.push("/(tabs)");
       } else {

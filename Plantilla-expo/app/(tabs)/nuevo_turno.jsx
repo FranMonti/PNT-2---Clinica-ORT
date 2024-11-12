@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import Icono from "react-native-vector-icons/Ionicons";
 import { Calendar } from "react-native-calendars";
-import { Animated } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const datosDoctores = {
@@ -37,8 +37,8 @@ const datosDoctores = {
 
 export default function NuevoTurno() {
   const [especialidadSeleccionada, setEspecialidadSeleccionada] =
-    useState(null);
-  const [doctorSeleccionado, setDoctorSeleccionado] = useState("");
+  useState(null);
+  const [doctorSeleccionado, setDoctorSeleccionado] = useState({ id: "", nombre: "" });
   const [mostrarDoctores, setMostrarDoctores] = useState(false);
   const [mostrarCalendario, setMostrarCalendario] = useState(false);
   const [titulo, setTitulo] = useState("Nuevo Turno");
@@ -129,7 +129,7 @@ export default function NuevoTurno() {
   };
 
   const seleccionarDoctor = (doctor) => {
-    setDoctorSeleccionado(doctor.nombre);
+    setDoctorSeleccionado({ id: doctor.id, nombre: doctor.nombre });
     alternarCalendario();
   };
 
@@ -142,12 +142,21 @@ export default function NuevoTurno() {
   const crearTurno = async () => {
     const nuevoTurno = {
       especialidad: especialidadSeleccionada,
-      doctor: doctorSeleccionado,
+      doctor: doctorSeleccionado.nombre,
+      doctorId: doctorSeleccionado.id,
       fecha: selectedDay,
       hora: selectedTime,
     };
-  
+    
     try {
+      const pacienteId = await AsyncStorage.getItem('PacienteId'); // Obtiene el PacienteId
+  
+      if (!pacienteId) {
+        throw new Error("No se encontró el PacienteId en la sesión");
+      }
+  
+      nuevoTurno.pacienteId = pacienteId; // Añade el PacienteId al turno
+  
       const response = await fetch('https://672982836d5fa4901b6d6322.mockapi.io/api/bd/Turno', {
         method: 'POST',
         headers: {
@@ -297,7 +306,7 @@ export default function NuevoTurno() {
               {"\n"}
               Especialidad: {especialidadSeleccionada}
               {"\n"}
-              Doctor: {doctorSeleccionado}
+              Doctor: {doctorSeleccionado.nombre}
               {"\n"}
               Fecha: {selectedDay}
               {"\n"}
