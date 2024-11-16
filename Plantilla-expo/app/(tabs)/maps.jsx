@@ -30,32 +30,32 @@ export default function MapTabScreen() {
 
   // Puntos ficticios de clínicas en Capital Federal y Provincia de Buenos Aires
   const clinicLocations = [
-    { id: 1, latitude: "-34.6037", longitude: "-58.3816", title: "Clínica Centro" },
-    { id: 2, latitude: "-34.6158", longitude: "-58.4333", title: "Clínica Palermo" },
-    { id: 3, latitude: "-34.7052", longitude: "-58.2787", title: "Clínica Lanús" },
-    { id: 4, latitude: "-34.6083", longitude: "-58.37", title: "Clínica Monserrat" },
-    { id: 5, latitude: "-34.6437", longitude: "-58.5659", title: "Clínica Lomas de Zamora" },
-    { id: 6, latitude: "-34.5514", longitude: "-58.4647", title: "Clínica San Fernando" },
-    { id: 7, latitude: "-34.5636", longitude: "-58.4587", title: "Clínica Vicente López" },
-    { id: 8, latitude: "-34.6023", longitude: "-58.4207", title: "Clínica Belgrano" },
-    { id: 9, latitude: "-34.4713", longitude: "-58.5097", title: "Clínica Tigre" },
-    { id: 10, latitude: "-34.617", longitude: "-58.3687", title: "Clínica Recoleta" },
-    { id: 11, latitude: "-34.6404", longitude: "-58.5625", title: "Clínica Banfield" },
-    { id: 12, latitude: "-34.6145", longitude: "-58.4464", title: "Clínica Villa Urquiza" },
-    { id: 13, latitude: "-34.6654", longitude: "-58.3669", title: "Clínica Almagro" },
-    { id: 14, latitude: "-34.6947", longitude: "-58.3733", title: "Clínica Avellaneda" },
-    { id: 15, latitude: "-34.7217", longitude: "-58.2548", title: "Clínica Quilmes" },
-    { id: 16, latitude: "-34.6179", longitude: "-58.4291", title: "Clínica Caballito" },
-    { id: 17, latitude: "-34.6076", longitude: "-58.3833", title: "Clínica San Telmo" },
-    { id: 18, latitude: "-34.5955", longitude: "-58.4447", title: "Clínica Colegiales" },
-    { id: 19, latitude: "-34.6581", longitude: "-58.4669", title: "Clínica Villa Lugano" },
-    { id: 20, latitude: "-34.6687", longitude: "-58.5619", title: "Clínica Villa Fiorito" }
-].map((clinic, index) => ({
+    { id: 1, latitude: -34.6037, longitude: -58.3816, title: "Clínica Centro" },
+    { id: 2, latitude: -34.6158, longitude: -58.4333, title: "Clínica Palermo" },
+    { id: 3, latitude: -34.7052, longitude: -58.2787, title: "Clínica Lanús" },
+    { id: 4, latitude: -34.6083, longitude: -58.37, title: "Clínica Monserrat" },
+    { id: 5, latitude: -34.6437, longitude: -58.5659, title: "Clínica Lomas de Zamora" },
+    { id: 6, latitude: -34.5514, longitude: -58.4647, title: "Clínica San Fernando" },
+    { id: 7, latitude: -34.5636, longitude: -58.4587, title: "Clínica Vicente López" },
+    { id: 8, latitude: -34.6023, longitude: -58.4207, title: "Clínica Belgrano" },
+    { id: 9, latitude: -34.4713, longitude: -58.5097, title: "Clínica Tigre" },
+    { id: 10, latitude: -34.617, longitude: -58.3687, title: "Clínica Recoleta" },
+    { id: 11, latitude: -34.6404, longitude: -58.5625, title: "Clínica Banfield" },
+    { id: 12, latitude: -34.6145, longitude: -58.4464, title: "Clínica Villa Urquiza" },
+    { id: 13, latitude: -34.6654, longitude: -58.3669, title: "Clínica Almagro" },
+    { id: 14, latitude: -34.6947, longitude: -58.3733, title: "Clínica Avellaneda" },
+    { id: 15, latitude: -34.7217, longitude: -58.2548, title: "Clínica Quilmes" },
+    { id: 16, latitude: -34.6179, longitude: -58.4291, title: "Clínica Caballito" },
+    { id: 17, latitude: -34.6076, longitude: -58.3833, title: "Clínica San Telmo" },
+    { id: 18, latitude: -34.5955, longitude: -58.4447, title: "Clínica Colegiales" },
+    { id: 19, latitude: -34.6581, longitude: -58.4669, title: "Clínica Villa Lugano" },
+    { id: 20, latitude: -34.6687, longitude: -58.5619, title: "Clínica Villa Fiorito" },
+  ].map((clinic, index) => ({
     ...clinic,
     specialty: specialties[index % specialties.length],
     hours: "9:00hs a 18:00hs de Lunes a Viernes",
   }));
-
+  
   async function postClinicLocations() {
     try {
       for (const clinic of clinicLocations) {
