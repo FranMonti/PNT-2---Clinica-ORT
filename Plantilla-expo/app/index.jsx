@@ -58,7 +58,9 @@ export default function Login() {
       }
   
       const data = await response.json();
-      const user = data.find((u) => u.nombreUsuario === usuario && u.password === password);
+      
+      // Cambiar `nombreUsuario` por `usuario` en la búsqueda
+      const user = data.find((u) => u.usuario === usuario && u.password === password);
   
       if (user) {
         await AsyncStorage.setItem('PacienteId', user.id); 
@@ -72,6 +74,7 @@ export default function Login() {
       alert("Error en la autenticación");
     }
   };
+  
 
   const handleRegister = async () => {
     console.log('Usuario: ', usuario);
