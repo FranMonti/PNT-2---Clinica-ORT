@@ -249,61 +249,6 @@ export default function MapTabScreen() {
         >
           <Text style={styles.filterButtonText}>Filtrar</Text>
         </TouchableOpacity>
-
-        {/* Modal de filtro */}
-        <Modal
-          visible={isModalVisible}
-          transparent={true}
-          animationType="slide"
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>
-                ENCUENTRE SU CLÍNICA MÁS CERCANA
-              </Text>
-
-              {/* Selector de especialidad */}
-              <Picker
-                selectedValue={selectedSpecialty}
-                onValueChange={(itemValue) => setSelectedSpecialty(itemValue)}
-                style={styles.picker}
-              >
-                <Picker.Item label="Seleccione una especialidad" value="" />
-                <Picker.Item label="Ginecología" value="Ginecología" />
-                <Picker.Item label="Cardiología" value="Cardiología" />
-                <Picker.Item label="Dermatología" value="Dermatología" />
-                <Picker.Item label="Pediatría" value="Pediatría" />
-              </Picker>
-
-              <View style={styles.modalButtonContainer}>
-                {/* Botón para cerrar el modal */}
-                <TouchableOpacity
-                  style={styles.modalCloseButton}
-                  onPress={() => setIsModalVisible(false)}
-                >
-                  <Text style={styles.modalButtonText}>Cerrar</Text>
-                </TouchableOpacity>
-
-                {/* Botón para buscar con la especialidad seleccionada */}
-                <TouchableOpacity
-                  style={styles.modalSearchButton}
-                  onPress={() => {
-                    setFilteredClinics(
-                      clinicLocations.filter(
-                        (clinic) =>
-                          selectedSpecialty === "" ||
-                          clinic.specialty === selectedSpecialty
-                      )
-                    );
-                    setIsModalVisible(false); // Cierra el modal después de aplicar el filtro
-                  }}
-                >
-                  <Text style={styles.modalButtonText}>Buscar</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </Modal>
       </View>
     </View>
   );

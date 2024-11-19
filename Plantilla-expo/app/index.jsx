@@ -74,55 +74,56 @@ export default function Login() {
   };
 
   const handleRegister = async () => {
-    if (!validations.username || !validations.email || !Object.values(validations).every(Boolean)) {
-      alert("Por favor, completa todas las validaciones antes de continuar.");
-      return;
-    }
-
+    console.log('Usuario: ', usuario);
+    console.log('Password: ', password);
+  
     try {
-      const response = await fetch("https://67310dbe7aaf2a9aff0fb8c5.mockapi.io/Datos-Usuario");
-
-      if (!response.ok) {
-        console.error("Error en la respuesta:", response.status);
-        alert("Error al conectar con el servidor.");
-        return;
-      }
-
+      const response = await fetch('https://67310dbe7aaf2a9aff0fb8c5.mockapi.io/Datos-Usuario');
       const data = await response.json();
-      const userExist = data.some((u) => u.nombreUsuario === usuario);
+      
+      const userExist = data.some((u) => u.usuario === usuario);
       const emailExist = data.some((u) => u.email === email);
-
+  
       if (userExist) {
-        alert("Usuario ya registrado");
+        alert('Usuario ya registrado');
       } else if (emailExist) {
-        alert("Email ya registrado");
+        alert('Email ya registrado');
       } else {
         const body = JSON.stringify({
-          nombreUsuario: usuario,
+          usuario: usuario,
           email: email,
           password: password,
         });
-
-        const registerResponse = await fetch("https://67310dbe7aaf2a9aff0fb8c5.mockapi.io/Datos-Usuario", {
-          method: "POST",
+  
+        const registerResponse = await fetch('https://67310dbe7aaf2a9aff0fb8c5.mockapi.io/Datos-Usuario', {
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json'
           },
-          body: body,
+          body: body
         });
-
+  
         if (registerResponse.ok) {
-          alert("Registro Exitoso");
-          router.push("/(tabs)");
+          alert('Registro Exitoso');
+          const nuevoUsuario = await registerResponse.json();
+  
+          // Guardar el ID del nuevo usuario en AsyncStorage
+          console.log('Usuario registrado:', nuevoUsuario);
+          await AsyncStorage.setItem('PacienteId', nuevoUsuario.id);
+          console.log("PacienteId almacenado después del registro:", nuevoUsuario.id);
+  
+          // Redirigir a la pantalla principal
+          router.push('/(tabs)');
         } else {
-          alert("Error al registrar el usuario");
+          alert('Error al registrar el usuario');
         }
       }
     } catch (error) {
-      console.error("Error en la autenticación:", error);
-      alert("Error en la autenticación");
+      console.error("Error en el registro:", error);
+      alert('Error en la autenticación');
     }
   };
+  
 
   const toggleMode = () => {
     setEsLogin((prev) => !prev);

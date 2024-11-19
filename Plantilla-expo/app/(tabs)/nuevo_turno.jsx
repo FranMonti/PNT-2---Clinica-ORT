@@ -147,15 +147,20 @@ export default function NuevoTurno() {
       fecha: selectedDay,
       hora: selectedTime,
     };
-    
+  
     try {
-      const pacienteId = await AsyncStorage.getItem('PacienteId'); // Obtiene el PacienteId
+      const pacienteId = await AsyncStorage.getItem('PacienteId');
+      console.log("PacienteId recuperado de AsyncStorage:", pacienteId);
   
       if (!pacienteId) {
-        throw new Error("No se encontró el PacienteId en la sesión");
+        console.error("Error: No se encontró el PacienteId en la sesión");
+        Alert.alert("Error", "No se encontró el ID del paciente. Por favor, inicie sesión.");
+        return;
       }
   
-      nuevoTurno.pacienteId = pacienteId; // Añade el PacienteId al turno
+      nuevoTurno.pacienteId = pacienteId;
+  
+      console.log("Turno enviado al servidor:", nuevoTurno);
   
       const response = await fetch('https://672982836d5fa4901b6d6322.mockapi.io/api/bd/Turno', {
         method: 'POST',
@@ -170,11 +175,14 @@ export default function NuevoTurno() {
       }
   
       const data = await response.json();
-      console.log("Turno creado:", data);
+      console.log("Turno creado correctamente:", data);
+      Alert.alert("Éxito", "¡Turno creado correctamente!");
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error al crear el turno:", error);
+      Alert.alert("Error", "No se pudo guardar el turno.");
     }
   };
+  
   return (
     <View style={styles.contenedor}>
       <View style={styles.cabecera}>
