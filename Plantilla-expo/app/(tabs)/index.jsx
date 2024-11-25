@@ -2,22 +2,25 @@ import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
-  TextInput,
   Button,
-  StyleSheet,
   ScrollView,
+  TextInput,
+  ActivityIndicator,
+  FlatList,
   Modal,
   TouchableOpacity,
-  FlatList,
-  Switch,
-  ActivityIndicator,
+  StyleSheet,
 } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 import { Formik } from "formik";
 import * as yup from "yup";
-import { Picker } from "@react-native-picker/picker";
+import { especialidades } from '../../constants/especialidades';
+
+// Importamos AsyncStorage para manejar el almacenamiento local
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function GestionEspecialista() {
-  const [view, setView] = useState("menu"); // menu, cargar, editar
+  const [view, setView] = useState("menu");
   const [especialistas, setEspecialistas] = useState([]);
   const [filteredEspecialistas, setFilteredEspecialistas] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -26,6 +29,8 @@ export default function GestionEspecialista() {
   const [selectedDays, setSelectedDays] = useState([]);
   const [selectedSpeciality, setSelectedSpeciality] = useState("");
   const [selectedSucursalFilter, setSelectedSucursalFilter] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loadingUser, setLoadingUser] = useState(true);
 
   const diasSemana = [
     "Lunes",
@@ -51,6 +56,8 @@ export default function GestionEspecialista() {
     sucursalId: yup.number().required("La sucursal es requerida"),
   });
 
+  
+
   const initialValues = {
     name: "",
     apellido: "",
@@ -58,6 +65,35 @@ export default function GestionEspecialista() {
     especialidad: "",
     sucursalId: "",
   };
+
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      try {
+        // Obtenemos el ID del usuario desde AsyncStorage
+        const userId = await AsyncStorage.getItem('userId');
+        console.log('Valor de userId obtenido de AsyncStorage:', userId);
+        if (!userId) {
+          // Si no hay usuario logueado, asumimos que no es admin
+          setIsAdmin(false);
+          setLoadingUser(false);
+          return;
+        }
+        // Obtenemos los datos del usuario actual por su ID
+        const response = await fetch(
+          `https://67310dbe7aaf2a9aff0fb8c5.mockapi.io/Datos-Usuario/${userId}`
+        );
+        const currentUser = await response.json();
+        setIsAdmin(currentUser?.esAdmin || false);
+      } catch (error) {
+        console.error("Error al verificar el usuario:", error);
+        setIsAdmin(false);
+      } finally {
+        setLoadingUser(false);
+      }
+    };
+
+    checkAdminStatus();
+  }, []);
 
   useEffect(() => {
     if (view === "editar") {
@@ -73,7 +109,7 @@ export default function GestionEspecialista() {
     setLoading(true);
     try {
       const response = await fetch(
-        "https://672aac9d976a834dd024100f.mockapi.io/api/especialistas/especialistas"
+        "https://67310dbe7aaf2a9aff0fb8c5.mockapi.io/usuarios/especialista"
       );
       const data = await response.json();
       setEspecialistas(data);
@@ -104,7 +140,7 @@ export default function GestionEspecialista() {
   const handleSubmitCarga = async (values, { resetForm }) => {
     try {
       const response = await fetch(
-        "https://672aac9d976a834dd024100f.mockapi.io/api/especialistas/especialistas",
+        "https://67310dbe7aaf2a9aff0fb8c5.mockapi.io/usuarios/especialista",
         {
           method: "POST",
           headers: {
@@ -138,38 +174,65 @@ export default function GestionEspecialista() {
     setModalVisible(true);
   };
 
-  const handleSubmitEdicion = async (values) => {
+  const handleSubmitEdicion = async (updatedData) => {
     if (!selectedEspecialista?.id) {
       alert("Error: No se puede identificar al especialista");
       return;
     }
+
     try {
       setLoading(true);
+      const updatedEspecialista = {
+        ...selectedEspecialista,
+        diasAtencion: updatedData.diasAtencion,
+      };
+
       const response = await fetch(
-        `https://672aac9d976a834dd024100f.mockapi.io/api/especialistas/especialistas/${selectedEspecialista.id}`,
+        `https://67310dbe7aaf2a9aff0fb8c5.mockapi.io/usuarios/especialista/${selectedEspecialista.id}`,
         {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            sucursalId: values.sucursalId || null,
-            diasAtencion: selectedDays,
-            activo: values.activo,
-          }),
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedEspecialista),
         }
       );
-      if (response.ok) {
-        alert("Especialista actualizado exitosamente");
-        setModalVisible(false);
-        getEspecialistas();
-      } else {
-        throw new Error("Error al actualizar el especialista");
+
+      if (!response.ok) {
+        const errorResponse = await response.json();
+        console.error("Error del servidor:", errorResponse);
+        throw new Error(errorResponse.message || "Error al actualizar");
       }
+
+      alert("Especialista actualizado exitosamente");
+      setModalVisible(false);
+      await getEspecialistas();
     } catch (error) {
-      alert("Error: " + error.message);
+      console.error("Error al actualizar el especialista:", error);
+      alert(
+        "Error: " + (error.message || "No se pudo actualizar el especialista")
+      );
     } finally {
       setLoading(false);
     }
   };
+
+  if (loadingUser) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#007bff" />
+      </View>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Bienvenido a Clínica ORT</Text>
+        <Text>No tienes permisos para acceder a esta sección.</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -251,12 +314,7 @@ export default function GestionEspecialista() {
                   style={styles.picker}
                 >
                   <Picker.Item label="Seleccione una especialidad" value="" />
-                  {[
-                    "Cardiología",
-                    "Dermatología",
-                    "Ginecología",
-                    "Pediatría",
-                  ].map((especialidad, index) => (
+                  {especialidades.map((especialidad, index) => (
                     <Picker.Item
                       key={index}
                       label={especialidad}
@@ -350,52 +408,121 @@ export default function GestionEspecialista() {
           ) : (
             <FlatList
               data={filteredEspecialistas}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => item.id.toString()}
               renderItem={({ item }) => (
                 <TouchableOpacity
                   onPress={() => handleEditEspecialista(item)}
                   style={styles.especialistaCard}
                 >
-                  <Text>
+                  <Text style={styles.especialistaName}>
                     {item.name} {item.apellido}
                   </Text>
+                  <TouchableOpacity
+                    style={styles.editButton}
+                    onPress={() => handleEditEspecialista(item)}
+                  >
+                    <Text style={styles.editButtonText}>Editar</Text>
+                  </TouchableOpacity>
                 </TouchableOpacity>
               )}
             />
           )}
-          <Button title="Volver" onPress={() => setView("menu")} />
+          <TouchableOpacity
+            style={styles.volverButton}
+            onPress={() => setView("menu")}
+          >
+            <Text style={styles.volverButtonText}>Volver</Text>
+          </TouchableOpacity>
         </View>
       )}
 
       <Modal visible={modalVisible} transparent>
-        <View style={styles.modalContainer}>
-          <ScrollView style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Editar Especialista</Text>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Editar Días de Atención</Text>
             {selectedEspecialista && (
               <Formik
                 initialValues={{
-                  sucursalId: selectedEspecialista.sucursalId || "",
-                  activo: selectedEspecialista.activo || false,
+                  diasAtencion: selectedEspecialista.diasAtencion || [],
                 }}
-                validationSchema={validationSchema}
-                onSubmit={handleSubmitEdicion}
+                onSubmit={(values) => {
+                  handleSubmitEdicion({
+                    diasAtencion: values.diasAtencion, // Solo los días actualizados
+                  });
+                }}
               >
                 {({ handleSubmit, setFieldValue, values }) => (
                   <View>
-                    <TextInput
-                      style={styles.input}
-                      placeholder="Nombre"
-                      value={selectedEspecialista.name}
-                      editable={false}
-                    />
-                    {/* Más inputs para edición */}
-                    <Button title="Guardar" onPress={handleSubmit} />
+                    {/* Lista de días de atención */}
+                    <View style={styles.inputContainer}>
+                      <Text style={styles.label}>Días de Atención</Text>
+                      <Picker
+                        selectedValue=""
+                        onValueChange={(itemValue) => {
+                          if (
+                            itemValue &&
+                            !values.diasAtencion.includes(itemValue)
+                          ) {
+                            setFieldValue("diasAtencion", [
+                              ...values.diasAtencion,
+                              itemValue,
+                            ]);
+                          }
+                        }}
+                        style={styles.picker}
+                      >
+                        <Picker.Item label="Seleccione un día" value="" />
+                        {diasSemana
+                          .filter((dia) => !values.diasAtencion.includes(dia))
+                          .map((dia, index) => (
+                            <Picker.Item key={index} label={dia} value={dia} />
+                          ))}
+                      </Picker>
+                    </View>
+
+                    {/* Días seleccionados */}
+                    <View style={styles.selectedDaysContainer}>
+                      <Text style={styles.label}>Días Seleccionados:</Text>
+                      <View style={styles.daysContainer}>
+                        {values.diasAtencion.map((dia, index) => (
+                          <View key={index} style={styles.dayItem}>
+                            <Text style={styles.dayText}>{dia}</Text>
+                            <TouchableOpacity
+                              onPress={() =>
+                                setFieldValue(
+                                  "diasAtencion",
+                                  values.diasAtencion.filter((d) => d !== dia)
+                                )
+                              }
+                              style={styles.removeButton}
+                            >
+                              <Text style={styles.removeButtonText}>×</Text>
+                            </TouchableOpacity>
+                          </View>
+                        ))}
+                      </View>
+                    </View>
+
+                    {/* Botones */}
+                    <View style={styles.buttonContainer}>
+                      <TouchableOpacity
+                        style={styles.cancelButton}
+                        onPress={() => setModalVisible(false)}
+                      >
+                        <Text style={styles.buttonText}>Cerrar</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.saveButton}
+                        onPress={handleSubmit} // Llama a Formik handleSubmit
+                      >
+                        <Text style={styles.buttonText}>Guardar</Text>
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 )}
               </Formik>
             )}
-            <Button title="Cerrar" onPress={() => setModalVisible(false)} />
-          </ScrollView>
+          </View>
         </View>
       </Modal>
     </View>
@@ -405,88 +532,110 @@ export default function GestionEspecialista() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f9f9f9",
-    padding: 20,
+    padding: 16,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 20,
-    textAlign: "center",
+    fontSize: 20,
+    marginBottom: 16,
+  },
+  scrollContainer: {
+    flex: 1,
   },
   inputContainer: {
-    marginBottom: 15,
+    marginBottom: 12,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    padding: 10,
-    backgroundColor: "#fff",
-    fontSize: 16,
-    color: "#333",
-    marginTop: 5,
-  },
-  picker: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    backgroundColor: "#fff",
-    marginTop: 5,
+    borderColor: "#ccc",
+    padding: 8,
+    marginTop: 4,
+    borderRadius: 4,
   },
   errorText: {
     color: "red",
-    fontSize: 12,
-    marginTop: 5,
+  },
+  picker: {
+    marginTop: 4,
+  },
+  selectedDaysContainer: {
+    marginBottom: 16,
   },
   daysContainer: {
     flexDirection: "row",
-    flexWrap: "wrap", // Permite que los elementos pasen a la siguiente línea
-    justifyContent: "space-between",
+    flexWrap: "wrap",
   },
   dayItem: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#e6f7ff",
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#007bff",
-    marginBottom: 10,
-    width: "48%", // Cada globo ocupará el 48% del ancho de la pantalla
+    marginRight: 8,
+    marginTop: 4,
+    backgroundColor: "#eee",
+    padding: 4,
+    borderRadius: 4,
   },
   dayText: {
-    color: "#007bff",
-    fontSize: 14,
-    flex: 1,
+    marginRight: 4,
   },
-
   removeButton: {
-    marginLeft: 5,
-    backgroundColor: "#ff5252",
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
+    padding: 4,
   },
   removeButtonText: {
-    color: "#fff",
-    fontSize: 12,
+    color: "red",
+  },
+  especialistaCard: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
+  especialistaName: {
+    fontSize: 16,
+  },
+  editButton: {
+    marginTop: 8,
+  },
+  editButtonText: {
+    color: "blue",
+  },
+  volverButton: {
+    marginTop: 16,
+  },
+  volverButtonText: {
+    color: "blue",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+  },
+  modalContainer: {
+    backgroundColor: "white",
+    margin: 16,
+    padding: 16,
+    borderRadius: 4,
+  },
+  modalTitle: {
+    fontSize: 18,
+    marginBottom: 12,
+  },
+  label: {
     fontWeight: "bold",
   },
-  button: {
-    backgroundColor: "#007bff",
-    padding: 15,
-    borderRadius: 8,
-    marginVertical: 10,
-    alignItems: "center",
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 16,
+  },
+  cancelButton: {
+    backgroundColor: "gray",
+    padding: 12,
+    borderRadius: 4,
+  },
+  saveButton: {
+    backgroundColor: "green",
+    padding: 12,
+    borderRadius: 4,
   },
   buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
+    color: "white",
   },
 });

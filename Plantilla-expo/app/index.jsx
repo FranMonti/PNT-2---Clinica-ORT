@@ -63,7 +63,8 @@ export default function Login() {
       const user = data.find((u) => u.usuario === usuario && u.password === password);
   
       if (user) {
-        await AsyncStorage.setItem('PacienteId', user.id); 
+        await AsyncStorage.setItem('userId', user.id); 
+        console.log('ID de inicio de secion, LOGIN:', user.id);
         alert("Login Conseguido");
         router.push("/(tabs)");
       } else {
@@ -126,6 +127,7 @@ export default function Login() {
       alert('Error en la autenticación');
     }
   };
+  
   
 
   const toggleMode = () => {

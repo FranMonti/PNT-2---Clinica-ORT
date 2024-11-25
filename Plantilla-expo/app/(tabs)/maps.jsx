@@ -14,6 +14,7 @@ import * as Linking from "expo-linking";
 import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 
+
 export default function MapTabScreen() {
   const [location, setLocation] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(true);
@@ -59,20 +60,40 @@ export default function MapTabScreen() {
   async function postClinicLocations() {
     try {
       for (const clinic of clinicLocations) {
-        const response = await fetch('https://672982836d5fa4901b6d6322.mockapi.io/api/bd/clinicas', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(clinic),
-        });
+        // Verificar si la clínica ya existe en la API
+        const checkResponse = await fetch(
+          "https://672982836d5fa4901b6d6322.mockapi.io/api/bd/clinicas"
+        );
+        const existingClinics = await checkResponse.json();
+        
+        const clinicExists = existingClinics.some(
+          (existingClinic) => existingClinic.title === clinic.title
+        );
+  
+        if (clinicExists) {
+          console.log(`Clinic ${clinic.title} already exists. Skipping.`);
+          continue; // Pasar al siguiente elemento
+        }
+  
+        // Si no existe, hacer POST
+        const response = await fetch(
+          "https://672982836d5fa4901b6d6322.mockapi.io/api/bd/clinicas",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(clinic),
+          }
+        );
         const data = await response.json();
         console.log(`Clinic ${clinic.title} added:`, data);
       }
     } catch (error) {
-      console.error('Error posting clinic locations:', error);
+      console.error("Error posting clinic locations:", error);
     }
   }
+  
   
   useEffect(() => {
     postClinicLocations();
@@ -245,7 +266,7 @@ export default function MapTabScreen() {
         {/* Botón para abrir el filtro */}
         <TouchableOpacity
           style={styles.filterButton}
-          onPress={() => setIsModalVisible(true)} // Abre el modal al presionar "Filtrar"
+          onPress={() => setIsModalVisible(true)} 
         >
           <Text style={styles.filterButtonText}>Filtrar</Text>
         </TouchableOpacity>
@@ -277,11 +298,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Fondo semi-transparente
+    backgroundColor: "rgba(0, 0, 0, 0.5)", 
   },
   modalContent: {
-    width: 250, // Reduce el ancho del modal
-    padding: 15, // Reduce el padding para hacerlo más compacto
+    width: 250, 
+    padding: 15, 
     backgroundColor: "white",
     borderRadius: 10,
     alignItems: "center",

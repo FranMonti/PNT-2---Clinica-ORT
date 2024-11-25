@@ -64,19 +64,6 @@ const AdminTabs = ({ colorScheme }) => (
         ),
       }}
     />
-    <Tabs.Screen
-      name="cargar_especialista"
-      options={{
-        title: "Cargar Especialista",
-        tabBarIcon: ({ color, focused }) => (
-          <Ionicons
-            size={28}
-            name={focused ? "person-add" : "person-add-outline"}
-            color={color}
-          />
-        ),
-      }}
-    />
   </Tabs>
 );
 
