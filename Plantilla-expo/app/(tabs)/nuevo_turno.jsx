@@ -230,7 +230,7 @@ export default function NuevoTurno() {
     };
 
     try {
-      const pacienteId = await AsyncStorage.getItem('PacienteId');
+      const pacienteId = await AsyncStorage.getItem('userId');
       console.log('PacienteId recuperado de AsyncStorage:', pacienteId);
 
       if (!pacienteId) {
@@ -269,8 +269,8 @@ export default function NuevoTurno() {
   );
 
   return (
-    <View style={styles.contenedor}>
-      <View style={styles.cabecera}>
+    <View style={styles.conatiner}>
+      <View style={styles.header}>
         <Icono name="chevron-back-outline" size={24} color="#000" onPress={atras} />
         <Text style={styles.titulo}>{titulo}</Text>
       </View>
@@ -303,7 +303,7 @@ export default function NuevoTurno() {
           )}
         />
       ) : (
-        <View style={styles.contenedorDoctores}>
+        <View style={styles.conatinerDoctores}>
           <Text style={styles.tituloEspecialidad}>{especialidadSeleccionada}</Text>
           <FlatList
             data={obtenerDoctoresPorEspecialidad(especialidadSeleccionada)}
@@ -312,7 +312,7 @@ export default function NuevoTurno() {
               <View style={styles.tarjetaDoctor}>
                 <Text style={styles.nombreDoctor}>{item.nombre}</Text>
                 <Text style={styles.distanciaDoctor}>{item.distancia}</Text>
-                <View style={styles.contenedorBotones}>
+                <View style={styles.conatinerBotones}>
                   <TouchableOpacity style={styles.boton}>
                     <Text style={styles.textoBoton}>Adjuntar</Text>
                   </TouchableOpacity>
@@ -331,7 +331,7 @@ export default function NuevoTurno() {
 
       {mostrarCalendario && (
         <View style={styles.overlay}>
-          <View style={styles.contenedorCalendario}>
+          <View style={styles.conatinerCalendario}>
             <View style={styles.headerHoras}>
               <Text style={styles.textoSeleccionHorario}>Seleccione día</Text>
               <TouchableOpacity
@@ -364,7 +364,7 @@ export default function NuevoTurno() {
 
       {selectedDay && (
         <View style={styles.overlay}>
-          <View style={styles.contenedorHoras}>
+          <View style={styles.conatinerHoras}>
             <View style={styles.headerHoras}>
               <Text style={styles.textoSeleccionHorario}>Seleccione horario</Text>
               <TouchableOpacity
@@ -449,19 +449,20 @@ export default function NuevoTurno() {
 
 // Estilos
 const styles = StyleSheet.create({
-  contenedor: {
+  conatiner: {
     flex: 1,
     backgroundColor: '#fff',
   },
-  cabecera: {
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
   },
   titulo: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginLeft: 16,
+    fontSize: 22,
+    fontWeight: "bold",
+    marginLeft: 10,
+    color: "#424242",
   },
   inputBusqueda: {
     height: 40,
@@ -491,7 +492,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  contenedorDoctores: {
+  conatinerDoctores: {
     flex: 1,
     padding: 16,
   },
@@ -515,7 +516,7 @@ const styles = StyleSheet.create({
     color: '#888',
     marginBottom: 8,
   },
-  contenedorBotones: {
+  conatinerBotones: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
@@ -539,13 +540,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  contenedorCalendario: {
+  conatinerCalendario: {
     backgroundColor: '#fff',
     padding: 16,
     borderRadius: 8,
     width: '90%',
   },
-  contenedorHoras: {
+  conatinerHoras: {
     backgroundColor: '#fff',
     padding: 16,
     borderRadius: 8,

@@ -26,18 +26,19 @@ const AdminTabs = ({ colorScheme }) => (
       }}
     />
     <Tabs.Screen
-      name="products"
-      options={{
-        title: "Productos",
-        tabBarIcon: ({ color, focused }) => (
-          <Ionicons
-            size={28}
-            name={focused ? "cart" : "cart-outline"}
-            color={color}
-          />
-        ),
-      }}
-    />
+  name="mi_perfil"
+  options={{
+    title: "Mi Perfil",
+    tabBarIcon: ({ color, focused }) => (
+      <Ionicons
+        size={28}
+        name={focused ? "person" : "person-outline"}
+        color={color}
+      />
+    ),
+  }}
+/>
+
     <Tabs.Screen
       name="nuevo_turno"
       options={{
@@ -88,18 +89,19 @@ const UserTabs = ({ colorScheme }) => (
       }}
     />
     <Tabs.Screen
-      name="products"
-      options={{
-        title: "Productos",
-        tabBarIcon: ({ color, focused }) => (
-          <Ionicons
-            size={28}
-            name={focused ? "cart" : "cart-outline"}
-            color={color}
-          />
-        ),
-      }}
-    />
+  name="mi_perfil"
+  options={{
+    title: "Mi Perfil",
+    tabBarIcon: ({ color, focused }) => (
+      <Ionicons
+        size={28}
+        name={focused ? "person" : "person-outline"} // Cambiado a íconos de persona
+        color={color}
+      />
+    ),
+  }}
+/>
+
     <Tabs.Screen
       name="nuevo_turno"
       options={{
@@ -137,14 +139,6 @@ export default function TabLayout() {
   useEffect(() => {
     const checkAdmin = async () => {
       const isAdmin = await verificarAdmin();
-  
-      if (isAdmin) {
-        console.log("Cargar menú de administrador.");
-        setIsAdmin(true);
-      } else {
-        console.log("Cargar menú de usuario regular.");
-        setIsAdmin(false);
-      }
     };
   
     checkAdmin();
@@ -153,7 +147,7 @@ export default function TabLayout() {
   const verificarAdmin = async () => {
     try {
 
-      const userId = await AsyncStorage.getItem("PacienteId");
+      const userId = await AsyncStorage.getItem("userId");
   
       if (!userId) {
         console.error("ID de usuario no encontrado en AsyncStorage.");
@@ -171,18 +165,6 @@ export default function TabLayout() {
   
       const user = data.find((u) => u.id === userId);
   
-      if (user) {
-        if (user.esAdmin) {
-          console.log("El usuario es administrador.");
-          return true;
-        } else {
-          console.log("El usuario no es administrador.");
-          return false;
-        }
-      } else {
-        console.error("Usuario no encontrado en la base de datos.");
-        return false;
-      }
     } catch (error) {
       console.error("Error al verificar permisos de administrador:", error);
       return false;

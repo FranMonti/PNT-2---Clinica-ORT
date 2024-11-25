@@ -113,7 +113,7 @@ export default function Login() {
   
           // Guardar el ID del nuevo usuario en AsyncStorage
           console.log('Usuario registrado:', nuevoUsuario);
-          await AsyncStorage.setItem('PacienteId', nuevoUsuario.id);
+          await AsyncStorage.setItem('userId', nuevoUsuario.id);
           console.log("PacienteId almacenado después del registro:", nuevoUsuario.id);
   
           // Redirigir a la pantalla principal

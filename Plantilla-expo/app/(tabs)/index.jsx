@@ -236,19 +236,23 @@ export default function GestionEspecialista() {
 
   return (
     <View style={styles.container}>
-      {view === "menu" && (
-        <View>
-          <Text style={styles.title}>Gestión de Especialistas</Text>
-          <Button
-            title="Cargar Especialista"
-            onPress={() => setView("cargar")}
-          />
-          <Button
-            title="Editar Especialista"
-            onPress={() => setView("editar")}
-          />
-        </View>
-      )}
+    {view === "menu" && (
+      <View style={styles.menuContainer}>
+        <Text style={styles.title}>Gestión de Especialistas</Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => setView("cargar")}
+        >
+          <Text style={styles.buttonText}>Cargar Especialista</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => setView("editar")}
+        >
+          <Text style={styles.buttonText}>Editar Especialista</Text>
+        </TouchableOpacity>
+      </View>
+    )}
 
       {view === "cargar" && (
         <Formik
@@ -393,8 +397,20 @@ export default function GestionEspecialista() {
                 </View>
               )}
 
-              <Button title="Guardar Especialista" onPress={handleSubmit} />
-              <Button title="Volver" onPress={() => setView("menu")} />
+<TouchableOpacity
+  style={styles.roundedButton}
+  onPress={handleSubmit} // Acción del botón de guardar
+>
+  <Text style={styles.roundedButtonText}>Guardar Especialista</Text>
+</TouchableOpacity>
+
+<TouchableOpacity
+  style={styles.roundedButton}
+  onPress={() => setView("menu")} // Acción del botón de volver
+>
+  <Text style={styles.roundedButtonText}>Volver</Text>
+</TouchableOpacity>
+
             </ScrollView>
           )}
         </Formik>
@@ -407,25 +423,26 @@ export default function GestionEspecialista() {
             <ActivityIndicator size="large" />
           ) : (
             <FlatList
-              data={filteredEspecialistas}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  onPress={() => handleEditEspecialista(item)}
-                  style={styles.especialistaCard}
-                >
-                  <Text style={styles.especialistaName}>
-                    {item.name} {item.apellido}
-                  </Text>
-                  <TouchableOpacity
-                    style={styles.editButton}
-                    onPress={() => handleEditEspecialista(item)}
-                  >
-                    <Text style={styles.editButtonText}>Editar</Text>
-                  </TouchableOpacity>
-                </TouchableOpacity>
-              )}
-            />
+  style={styles.flatListContainer}
+  data={filteredEspecialistas}
+  keyExtractor={(item) => item.id.toString()}
+  renderItem={({ item }) => (
+    <TouchableOpacity
+      onPress={() => handleEditEspecialista(item)}
+      style={styles.especialistaCard}
+    >
+      <Text style={styles.especialistaName}>
+        {item.name} {item.apellido}
+      </Text>
+      <TouchableOpacity
+        style={styles.editButton}
+        onPress={() => handleEditEspecialista(item)}
+      >
+        <Text style={styles.editButtonText}>Editar</Text>
+      </TouchableOpacity>
+    </TouchableOpacity>
+  )}
+/>
           )}
           <TouchableOpacity
             style={styles.volverButton}
@@ -535,8 +552,11 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   title: {
-    fontSize: 20,
-    marginBottom: 16,
+    fontSize: 22,
+    fontWeight: "bold",
+    marginLeft: 10,
+    color: "#424242",
+    paddingBottom: 25,
   },
   scrollContainer: {
     flex: 1,
@@ -583,25 +603,42 @@ const styles = StyleSheet.create({
     color: "red",
   },
   especialistaCard: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    padding: 12,
+    backgroundColor: '#fff',
+    marginBottom: 8,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   especialistaName: {
     fontSize: 16,
-  },
+    fontWeight: 'bold',
+    color: '#333',  },
   editButton: {
-    marginTop: 8,
-  },
+    marginTop: 4,
+    alignSelf: 'flex-start',
+    backgroundColor: '#2196f3',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,  },
   editButtonText: {
-    color: "blue",
-  },
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',  },
   volverButton: {
     marginTop: 16,
-  },
+    alignSelf: 'center',
+    backgroundColor: '#2a9d8f',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 8,  },
   volverButtonText: {
-    color: "blue",
-  },
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',  },
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
@@ -638,4 +675,51 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "white",
   },
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: "#f9f9f9",
+  },
+  menuContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#2a9d8f",
+    marginBottom: 30,
+    textAlign: "center",
+  },
+  button: {
+    backgroundColor: "#2196f3",
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    marginVertical: 10,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  flatListContainer: {
+    maxHeight: '85%', 
+    marginBottom: 16, 
+  },
+  roundedButton: {
+    backgroundColor: "#2a9d8f", // Color verde
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8, // Bordes redondeados
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  roundedButtonText: {
+    color: "#fff", // Texto blanco
+    fontSize: 16,
+    fontWeight: "bold",
+  }
 });
