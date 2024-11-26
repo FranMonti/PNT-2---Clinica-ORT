@@ -3,6 +3,7 @@ import { Tabs } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Colors } from "../../constants/Colors";
 import { useColorScheme } from "react-native";
+import { useUser } from "../context/userContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const AdminTabs = ({ colorScheme }) => (
@@ -133,46 +134,17 @@ const UserTabs = ({ colorScheme }) => (
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const { user, loading } = useUser();
 
-  useEffect(() => {
-    const checkAdmin = async () => {
-      const isAdmin = await verificarAdmin();
-    };
-  
-    checkAdmin();
-  }, []);
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color={colorScheme.primary} />
+      </View>
+    );
+  }
 
-  const verificarAdmin = async () => {
-    try {
-
-      const userId = await AsyncStorage.getItem("userId");
-  
-      if (!userId) {
-        console.error("ID de usuario no encontrado en AsyncStorage.");
-        return false;
-      }
-      const response = await fetch("https://67310dbe7aaf2a9aff0fb8c5.mockapi.io/Datos-Usuario");
-  
-      if (!response.ok) {
-        console.error("Error en la respuesta del servidor:", response.status);
-        alert("Error al conectar con el servidor.");
-        return false;
-      }
-  
-      const data = await response.json();
-  
-      const user = data.find((u) => u.id === userId);
-  
-    } catch (error) {
-      console.error("Error al verificar permisos de administrador:", error);
-      return false;
-    }
-  };
-  
-
-  return isAdmin ? (
+  return user?.esAdmin ? (
     <AdminTabs colorScheme={colorScheme} />
   ) : (
     <UserTabs colorScheme={colorScheme} />

@@ -19,6 +19,13 @@ const imagenesPorEspecialidad = {
   'Cardiología': require('../(tabs)/especialidad_imagenes/cardiologia.png'),
   'Dermatología': require('../(tabs)/especialidad_imagenes/dermatologia.png'),
   'Pediatría': require('../(tabs)/especialidad_imagenes/pediatria.png'),
+  'Fonoaudiología': require('../(tabs)/especialidad_imagenes/fonoaudiologia-removebg-preview.png'),
+  'Gastroenterología': require('../(tabs)/especialidad_imagenes/gastroenterologia-removebg-preview.png'),
+  'Neumonología': require('../(tabs)/especialidad_imagenes/neumonologia-removebg-preview.png'),
+  'Odontología': require('../(tabs)/especialidad_imagenes/odontologia-removebg-preview.png'),
+  'Oftalmología': require('../(tabs)/especialidad_imagenes/oftalmologia-removebg-preview.png'),
+  'Traumatología': require('../(tabs)/especialidad_imagenes/traumatologia-removebg-preview.png'),
+  'Urología': require('../(tabs)/especialidad_imagenes/urologia-removebg-preview.png'),
 };
 
 export default function NuevoTurno() {

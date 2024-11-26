@@ -12,7 +12,7 @@ import {
 import { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { useUser } from "./context/userContext";
 
 export default function Login() {
   const [esLogin, setEsLogin] = useState(false);
@@ -30,6 +30,7 @@ export default function Login() {
   });
 
   const router = useRouter();
+  const { updateUser } = useUser(); 
 
   const validateInputs = () => {
     setValidations({
@@ -59,11 +60,10 @@ export default function Login() {
   
       const data = await response.json();
       
-      // Cambiar `nombreUsuario` por `usuario` en la búsqueda
       const user = data.find((u) => u.usuario === usuario && u.password === password);
   
       if (user) {
-        await AsyncStorage.setItem('userId', user.id); 
+        await updateUser(user);
         console.log('ID de inicio de secion, LOGIN:', user.id);
         alert("Login Conseguido");
         router.push("/(tabs)");
@@ -76,7 +76,6 @@ export default function Login() {
     }
   };
   
-
   const handleRegister = async () => {
     console.log('Usuario: ', usuario);
     console.log('Password: ', password);
@@ -111,12 +110,10 @@ export default function Login() {
           alert('Registro Exitoso');
           const nuevoUsuario = await registerResponse.json();
   
-          // Guardar el ID del nuevo usuario en AsyncStorage
+          await updateUser(nuevoUsuario);
           console.log('Usuario registrado:', nuevoUsuario);
-          await AsyncStorage.setItem('userId', nuevoUsuario.id);
           console.log("PacienteId almacenado después del registro:", nuevoUsuario.id);
   
-          // Redirigir a la pantalla principal
           router.push('/(tabs)');
         } else {
           alert('Error al registrar el usuario');
@@ -127,8 +124,6 @@ export default function Login() {
       alert('Error en la autenticación');
     }
   };
-  
-  
 
   const toggleMode = () => {
     setEsLogin((prev) => !prev);
@@ -136,7 +131,6 @@ export default function Login() {
     setEmail("");
     setPassword("");
   };
-  
 
   return (
     <View style={styles.container}>
@@ -178,7 +172,6 @@ export default function Login() {
         onChangeText={setPassword}
       />
 
-      {/* Validaciones solo para el formulario de registro */}
       {!esLogin && (
         <View style={[styles.validationContainer, { marginBottom: 20 }]}>
           <Text style={[styles.validationText, validations.minLength ? styles.validationSuccess : styles.validationError]}>
