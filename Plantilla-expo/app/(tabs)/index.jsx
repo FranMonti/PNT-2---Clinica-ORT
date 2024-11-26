@@ -10,27 +10,30 @@ import {
   Modal,
   TouchableOpacity,
   StyleSheet,
+  Image
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { Formik } from "formik";
 import * as yup from "yup";
 import { especialidades } from '../../constants/especialidades';
+import { useUser } from "../context/userContext";
+import { useNavigation } from "@react-navigation/native";
 
-// Importamos AsyncStorage para manejar el almacenamiento local
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function GestionEspecialista() {
   const [view, setView] = useState("menu");
   const [especialistas, setEspecialistas] = useState([]);
   const [filteredEspecialistas, setFilteredEspecialistas] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedEspecialista, setSelectedEspecialista] = useState(null);
   const [selectedDays, setSelectedDays] = useState([]);
   const [selectedSpeciality, setSelectedSpeciality] = useState("");
   const [selectedSucursalFilter, setSelectedSucursalFilter] = useState("");
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [loadingUser, setLoadingUser] = useState(true);
+  const [specialistIsLoading, setSpecialistIsLoading] = useState(false);
+  const { user, loading } = useUser();
+  const navigation = useNavigation();
+
+  console.log('user de context en index:', user);
 
   const diasSemana = [
     "Lunes",
@@ -67,35 +70,6 @@ export default function GestionEspecialista() {
   };
 
   useEffect(() => {
-    const checkAdminStatus = async () => {
-      try {
-        // Obtenemos el ID del usuario desde AsyncStorage
-        const userId = await AsyncStorage.getItem('userId');
-        console.log('Valor de userId obtenido de AsyncStorage:', userId);
-        if (!userId) {
-          // Si no hay usuario logueado, asumimos que no es admin
-          setIsAdmin(false);
-          setLoadingUser(false);
-          return;
-        }
-        // Obtenemos los datos del usuario actual por su ID
-        const response = await fetch(
-          `https://67310dbe7aaf2a9aff0fb8c5.mockapi.io/Datos-Usuario/${userId}`
-        );
-        const currentUser = await response.json();
-        setIsAdmin(currentUser?.esAdmin || false);
-      } catch (error) {
-        console.error("Error al verificar el usuario:", error);
-        setIsAdmin(false);
-      } finally {
-        setLoadingUser(false);
-      }
-    };
-
-    checkAdminStatus();
-  }, []);
-
-  useEffect(() => {
     if (view === "editar") {
       getEspecialistas();
     }
@@ -106,7 +80,7 @@ export default function GestionEspecialista() {
   }, [selectedSucursalFilter, especialistas]);
 
   const getEspecialistas = async () => {
-    setLoading(true);
+    setSpecialistIsLoading(true);
     try {
       const response = await fetch(
         "https://67310dbe7aaf2a9aff0fb8c5.mockapi.io/usuarios/especialista"
@@ -116,7 +90,7 @@ export default function GestionEspecialista() {
     } catch (error) {
       console.error("Error al obtener especialistas:", error);
     } finally {
-      setLoading(false);
+      setSpecialistIsLoading(false);
     }
   };
 
@@ -181,7 +155,7 @@ export default function GestionEspecialista() {
     }
 
     try {
-      setLoading(true);
+      setSpecialistIsLoading(true);
       const updatedEspecialista = {
         ...selectedEspecialista,
         diasAtencion: updatedData.diasAtencion,
@@ -213,11 +187,11 @@ export default function GestionEspecialista() {
         "Error: " + (error.message || "No se pudo actualizar el especialista")
       );
     } finally {
-      setLoading(false);
+      setSpecialistIsLoading(false);
     }
   };
 
-  if (loadingUser) {
+  if (loading) {
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" color="#007bff" />
@@ -225,14 +199,36 @@ export default function GestionEspecialista() {
     );
   }
 
-  if (!isAdmin) {
+  if (!user) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.title}>Bienvenido a Clínica ORT</Text>
-        <Text>No tienes permisos para acceder a esta sección.</Text>
+      <View style={styles.containerNoAdmin}>
+        <Text style={styles.title}>Sesión no iniciada</Text>
+        <Text style={styles.message}>Por favor, vuelva atrás para iniciar sesión</Text>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Text style={styles.backButtonText}>Volver atrás</Text>
+        </TouchableOpacity>
       </View>
     );
-  }
+} else if (!user.esAdmin) {
+    return (
+      <View style={styles.containerNoAdmin}>
+        <Text style={styles.title}>Bienvenido a Clínica ORT</Text>
+        <Image 
+          source={require('../../assets/clinica.png')}  
+          style={styles.imagenPlaceholder} 
+        />
+        <TouchableOpacity
+          style={styles.newTurnButton}
+          onPress={() => navigation.navigate("nuevo_turno")}
+        >
+          <Text style={styles.newTurnButtonText}>Asignar nuevo turno</Text>
+        </TouchableOpacity>
+      </View>
+    );
+}
 
   return (
     <View style={styles.container}>
@@ -419,7 +415,7 @@ export default function GestionEspecialista() {
       {view === "editar" && (
         <View>
           <Text style={styles.title}>Editar Especialista</Text>
-          {loading ? (
+          {specialistIsLoading ? (
             <ActivityIndicator size="large" />
           ) : (
             <FlatList
@@ -547,6 +543,13 @@ export default function GestionEspecialista() {
 }
 
 const styles = StyleSheet.create({
+  containerNoAdmin:{
+    flex: 1,
+    padding: 16,
+    margin: 20,
+    alignContent: 'center',
+    justifyContent: 'center',
+  },
   container: {
     flex: 1,
     padding: 16,
@@ -721,5 +724,43 @@ const styles = StyleSheet.create({
     color: "#fff", // Texto blanco
     fontSize: 16,
     fontWeight: "bold",
+  },
+  newTurnButton: {
+    backgroundColor: "#4caf50",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    width: "100%",
+  },
+  newTurnButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+    textAlign: "center",
+  },
+  imagenPlaceholder: {
+    width: 350,
+    height: 350,
+    marginBottom: 8,
+    alignContent: 'center',
+    alignItems: 'center',
+    marginLeft: 10
+  },
+  message: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginVertical: 20,
+    color: '#666'
+  },
+  backButton: {
+    backgroundColor: '#666',
+    padding: 15,
+    borderRadius: 8,
+    marginTop: 10,
+  },
+  backButtonText: {
+    color: 'white',
+    textAlign: 'center',
+    fontSize: 16,
   }
 });
