@@ -54,27 +54,6 @@ export default function NuevoTurno() {
     'Sábado': 6,
   };
 
-  const seleccionarArchivo = async (doctorId) => {
-    try {
-      const archivo = await DocumentPicker.getDocumentAsync({
-        type: ['image/*', 'application/pdf'], // Permite imágenes y PDF
-      });
-  
-      if (archivo.type === 'success') {
-        console.log('Archivo seleccionado:', archivo);
-        Alert.alert(
-          'Éxito',
-          `Archivo "${archivo.name}" adjuntado correctamente para el doctor ID: ${doctorId}`
-        );
-        // Aquí puedes guardar la información del archivo si es necesario
-      } else {
-        console.log('Selección de archivo cancelada');
-      }
-    } catch (error) {
-      console.error('Error al seleccionar el archivo:', error);
-      Alert.alert('Error', 'No se pudo adjuntar el archivo.');
-    }
-  };
 
   const getEspecialistas = async () => {
     try {
@@ -298,6 +277,28 @@ export default function NuevoTurno() {
     esp => esp.especialidad.toLowerCase().includes(busqueda.toLowerCase())
   );
 
+
+  const seleccionarArchivo = async (doctorId) => {
+    try {
+      const archivo = await DocumentPicker.getDocumentAsync({
+        type: ['image/*', 'application/pdf'], 
+      });
+  
+      if (archivo.type === 'success') {
+        console.log('Archivo seleccionado:', archivo);
+        Alert.alert(
+          'Éxito',
+          `Archivo "${archivo.name}" adjuntado correctamente para el doctor ID: ${doctorId}`
+        );
+      } else {
+        console.log('Selección de archivo cancelada');
+      }
+    } catch (error) {
+      console.error('Error al seleccionar el archivo:', error);
+      Alert.alert('Error', 'No se pudo adjuntar el archivo.');
+    }
+  };
+
   return (
     <View style={styles.conatiner}>
       <View style={styles.header}>
@@ -480,8 +481,6 @@ export default function NuevoTurno() {
     </View>
   );
 }
-
-// Estilos
 const styles = StyleSheet.create({
   conatiner: {
     flex: 1,

@@ -10,15 +10,14 @@ import {
   Modal,
   TouchableOpacity,
   StyleSheet,
-  Image
+  Image,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { Formik } from "formik";
 import * as yup from "yup";
-import { especialidades } from '../../constants/especialidades';
+import { especialidades } from "../../constants/especialidades";
 import { useUser } from "../context/userContext";
 import { useNavigation } from "@react-navigation/native";
-
 
 export default function GestionEspecialista() {
   const [view, setView] = useState("menu");
@@ -33,7 +32,7 @@ export default function GestionEspecialista() {
   const { user, loading } = useUser();
   const navigation = useNavigation();
 
-  console.log('user de context en index:', user);
+  console.log("user de context en index:", user);
 
   const diasSemana = [
     "Lunes",
@@ -58,8 +57,6 @@ export default function GestionEspecialista() {
     dni: yup.string().required("El DNI es requerido"),
     sucursalId: yup.number().required("La sucursal es requerida"),
   });
-
-  
 
   const initialValues = {
     name: "",
@@ -203,7 +200,9 @@ export default function GestionEspecialista() {
     return (
       <View style={styles.containerNoAdmin}>
         <Text style={styles.title}>Sesión no iniciada</Text>
-        <Text style={styles.message}>Por favor, vuelva atrás para iniciar sesión</Text>
+        <Text style={styles.message}>
+          Por favor, vuelva atrás para iniciar sesión
+        </Text>
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
@@ -212,13 +211,13 @@ export default function GestionEspecialista() {
         </TouchableOpacity>
       </View>
     );
-} else if (!user.esAdmin) {
+  } else if (!user.esAdmin) {
     return (
       <View style={styles.containerNoAdmin}>
         <Text style={styles.title}>Bienvenido a Clínica ORT</Text>
-        <Image 
-          source={require('../../assets/clinica.png')}  
-          style={styles.imagenPlaceholder} 
+        <Image
+          source={require("../../assets/clinica.png")}
+          style={styles.imagenPlaceholder}
         />
         <TouchableOpacity
           style={styles.newTurnButton}
@@ -228,27 +227,27 @@ export default function GestionEspecialista() {
         </TouchableOpacity>
       </View>
     );
-}
+  }
 
   return (
     <View style={styles.container}>
-    {view === "menu" && (
-      <View style={styles.menuContainer}>
-        <Text style={styles.title}>Gestión de Especialistas</Text>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => setView("cargar")}
-        >
-          <Text style={styles.buttonText}>Cargar Especialista</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => setView("editar")}
-        >
-          <Text style={styles.buttonText}>Editar Especialista</Text>
-        </TouchableOpacity>
-      </View>
-    )}
+      {view === "menu" && (
+        <View style={styles.menuContainer}>
+          <Text style={styles.title}>Gestión de Especialistas</Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setView("cargar")}
+          >
+            <Text style={styles.buttonText}>Cargar Especialista</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setView("editar")}
+          >
+            <Text style={styles.buttonText}>Editar Especialista</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {view === "cargar" && (
         <Formik
@@ -260,7 +259,6 @@ export default function GestionEspecialista() {
             <ScrollView style={styles.scrollContainer}>
               <Text style={styles.title}>Cargar Especialista</Text>
 
-              {/* Nombre */}
               <View style={styles.inputContainer}>
                 <Text>Nombre</Text>
                 <TextInput
@@ -274,7 +272,6 @@ export default function GestionEspecialista() {
                 )}
               </View>
 
-              {/* Apellido */}
               <View style={styles.inputContainer}>
                 <Text>Apellido</Text>
                 <TextInput
@@ -288,7 +285,6 @@ export default function GestionEspecialista() {
                 )}
               </View>
 
-              {/* DNI */}
               <View style={styles.inputContainer}>
                 <Text>DNI</Text>
                 <TextInput
@@ -303,7 +299,6 @@ export default function GestionEspecialista() {
                 )}
               </View>
 
-              {/* Especialidad */}
               <View style={styles.inputContainer}>
                 <Text>Especialidad</Text>
                 <Picker
@@ -324,7 +319,6 @@ export default function GestionEspecialista() {
                 </Picker>
               </View>
 
-              {/* Sucursal */}
               <View style={styles.inputContainer}>
                 <Text>Sucursal</Text>
                 <Picker
@@ -348,7 +342,6 @@ export default function GestionEspecialista() {
                 )}
               </View>
 
-              {/* Días de atención */}
               <View style={styles.inputContainer}>
                 <Text>Días de Atención</Text>
                 <Picker
@@ -369,7 +362,6 @@ export default function GestionEspecialista() {
                 </Picker>
               </View>
 
-              {/* Mostrar días seleccionados */}
               {selectedDays.length > 0 && (
                 <View style={styles.selectedDaysContainer}>
                   <Text>Días seleccionados:</Text>
@@ -393,20 +385,21 @@ export default function GestionEspecialista() {
                 </View>
               )}
 
-<TouchableOpacity
-  style={styles.roundedButton}
-  onPress={handleSubmit} // Acción del botón de guardar
->
-  <Text style={styles.roundedButtonText}>Guardar Especialista</Text>
-</TouchableOpacity>
+              <TouchableOpacity
+                style={styles.roundedButton}
+                onPress={handleSubmit}
+              >
+                <Text style={styles.roundedButtonText}>
+                  Guardar Especialista
+                </Text>
+              </TouchableOpacity>
 
-<TouchableOpacity
-  style={styles.roundedButton}
-  onPress={() => setView("menu")} // Acción del botón de volver
->
-  <Text style={styles.roundedButtonText}>Volver</Text>
-</TouchableOpacity>
-
+              <TouchableOpacity
+                style={styles.roundedButton}
+                onPress={() => setView("menu")}
+              >
+                <Text style={styles.roundedButtonText}>Volver</Text>
+              </TouchableOpacity>
             </ScrollView>
           )}
         </Formik>
@@ -419,26 +412,26 @@ export default function GestionEspecialista() {
             <ActivityIndicator size="large" />
           ) : (
             <FlatList
-  style={styles.flatListContainer}
-  data={filteredEspecialistas}
-  keyExtractor={(item) => item.id.toString()}
-  renderItem={({ item }) => (
-    <TouchableOpacity
-      onPress={() => handleEditEspecialista(item)}
-      style={styles.especialistaCard}
-    >
-      <Text style={styles.especialistaName}>
-        {item.name} {item.apellido}
-      </Text>
-      <TouchableOpacity
-        style={styles.editButton}
-        onPress={() => handleEditEspecialista(item)}
-      >
-        <Text style={styles.editButtonText}>Editar</Text>
-      </TouchableOpacity>
-    </TouchableOpacity>
-  )}
-/>
+              style={styles.flatListContainer}
+              data={filteredEspecialistas}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  onPress={() => handleEditEspecialista(item)}
+                  style={styles.especialistaCard}
+                >
+                  <Text style={styles.especialistaName}>
+                    {item.name} {item.apellido}
+                  </Text>
+                  <TouchableOpacity
+                    style={styles.editButton}
+                    onPress={() => handleEditEspecialista(item)}
+                  >
+                    <Text style={styles.editButtonText}>Editar</Text>
+                  </TouchableOpacity>
+                </TouchableOpacity>
+              )}
+            />
           )}
           <TouchableOpacity
             style={styles.volverButton}
@@ -460,13 +453,12 @@ export default function GestionEspecialista() {
                 }}
                 onSubmit={(values) => {
                   handleSubmitEdicion({
-                    diasAtencion: values.diasAtencion, // Solo los días actualizados
+                    diasAtencion: values.diasAtencion,
                   });
                 }}
               >
                 {({ handleSubmit, setFieldValue, values }) => (
                   <View>
-                    {/* Lista de días de atención */}
                     <View style={styles.inputContainer}>
                       <Text style={styles.label}>Días de Atención</Text>
                       <Picker
@@ -493,7 +485,6 @@ export default function GestionEspecialista() {
                       </Picker>
                     </View>
 
-                    {/* Días seleccionados */}
                     <View style={styles.selectedDaysContainer}>
                       <Text style={styles.label}>Días Seleccionados:</Text>
                       <View style={styles.daysContainer}>
@@ -516,7 +507,6 @@ export default function GestionEspecialista() {
                       </View>
                     </View>
 
-                    {/* Botones */}
                     <View style={styles.buttonContainer}>
                       <TouchableOpacity
                         style={styles.cancelButton}
@@ -526,7 +516,7 @@ export default function GestionEspecialista() {
                       </TouchableOpacity>
                       <TouchableOpacity
                         style={styles.saveButton}
-                        onPress={handleSubmit} // Llama a Formik handleSubmit
+                        onPress={handleSubmit}
                       >
                         <Text style={styles.buttonText}>Guardar</Text>
                       </TouchableOpacity>
@@ -543,12 +533,12 @@ export default function GestionEspecialista() {
 }
 
 const styles = StyleSheet.create({
-  containerNoAdmin:{
+  containerNoAdmin: {
     flex: 1,
     padding: 16,
     margin: 20,
-    alignContent: 'center',
-    justifyContent: 'center',
+    alignContent: "center",
+    justifyContent: "center",
   },
   container: {
     flex: 1,
@@ -607,10 +597,10 @@ const styles = StyleSheet.create({
   },
   especialistaCard: {
     padding: 12,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     marginBottom: 8,
     borderRadius: 8,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -618,30 +608,35 @@ const styles = StyleSheet.create({
   },
   especialistaName: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',  },
+    fontWeight: "bold",
+    color: "#333",
+  },
   editButton: {
     marginTop: 4,
-    alignSelf: 'flex-start',
-    backgroundColor: '#2196f3',
+    alignSelf: "flex-start",
+    backgroundColor: "#2196f3",
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 4,  },
+    borderRadius: 4,
+  },
   editButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 14,
-    fontWeight: 'bold',  },
+    fontWeight: "bold",
+  },
   volverButton: {
     marginTop: 16,
-    alignSelf: 'center',
-    backgroundColor: '#2a9d8f',
+    alignSelf: "center",
+    backgroundColor: "#2a9d8f",
     paddingHorizontal: 16,
     paddingVertical: 10,
-    borderRadius: 8,  },
+    borderRadius: 8,
+  },
   volverButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',  },
+    fontWeight: "bold",
+  },
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
@@ -709,19 +704,19 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   flatListContainer: {
-    maxHeight: '85%', 
-    marginBottom: 16, 
+    maxHeight: "85%",
+    marginBottom: 16,
   },
   roundedButton: {
-    backgroundColor: "#2a9d8f", // Color verde
+    backgroundColor: "#2a9d8f",
     paddingVertical: 12,
     paddingHorizontal: 24,
-    borderRadius: 8, // Bordes redondeados
+    borderRadius: 8,
     alignItems: "center",
     marginVertical: 10,
   },
   roundedButtonText: {
-    color: "#fff", // Texto blanco
+    color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
   },
@@ -742,25 +737,25 @@ const styles = StyleSheet.create({
     width: 350,
     height: 350,
     marginBottom: 8,
-    alignContent: 'center',
-    alignItems: 'center',
-    marginLeft: 10
+    alignContent: "center",
+    alignItems: "center",
+    marginLeft: 10,
   },
   message: {
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
     marginVertical: 20,
-    color: '#666'
+    color: "#666",
   },
   backButton: {
-    backgroundColor: '#666',
+    backgroundColor: "#666",
     padding: 15,
     borderRadius: 8,
     marginTop: 10,
   },
   backButtonText: {
-    color: 'white',
-    textAlign: 'center',
+    color: "white",
+    textAlign: "center",
     fontSize: 16,
-  }
+  },
 });

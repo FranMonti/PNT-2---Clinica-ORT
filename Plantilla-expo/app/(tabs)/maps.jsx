@@ -21,7 +21,6 @@ export default function MapTabScreen() {
   const mapRef = useRef(null);
   const clinicRefs = useRef({});
 
-  // Lista de especialidades para asignarlas aleatoriamente a cada clínica ficticia
   const specialties = [
     "Ginecología",
     "Cardiología",
@@ -29,7 +28,6 @@ export default function MapTabScreen() {
     "Pediatría",
   ];
 
-  // Puntos ficticios de clínicas en Capital Federal y Provincia de Buenos Aires
   const clinicLocations = [
     { id: 1, latitude: -34.6037, longitude: -58.3816, title: "Clínica Centro" },
     { id: 2, latitude: -34.6158, longitude: -58.4333, title: "Clínica Palermo" },
@@ -60,7 +58,6 @@ export default function MapTabScreen() {
   async function postClinicLocations() {
     try {
       for (const clinic of clinicLocations) {
-        // Verificar si la clínica ya existe en la API
         const checkResponse = await fetch(
           "https://672982836d5fa4901b6d6322.mockapi.io/api/bd/clinicas"
         );
@@ -72,10 +69,9 @@ export default function MapTabScreen() {
   
         if (clinicExists) {
           console.log(`Clinic ${clinic.title} already exists. Skipping.`);
-          continue; // Pasar al siguiente elemento
+          continue; 
         }
   
-        // Si no existe, hacer POST
         const response = await fetch(
           "https://672982836d5fa4901b6d6322.mockapi.io/api/bd/clinicas",
           {
@@ -140,11 +136,10 @@ export default function MapTabScreen() {
   };
 
   const [selectedSpecialty, setSelectedSpecialty] = useState("");
-  const [filteredClinics, setFilteredClinics] = useState(clinicLocations); // Inicialmente todas las clínicas
+  const [filteredClinics, setFilteredClinics] = useState(clinicLocations); 
 
   return (
     <View style={styles.container}>
-      {/* Modal para mostrar mensaje inicial */}
       <Modal visible={isModalVisible} transparent={true} animationType="slide">
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
@@ -152,7 +147,6 @@ export default function MapTabScreen() {
               ENCUENTRE SU CLÍNICA MÁS CERCANA
             </Text>
 
-            {/* Selector de especialidad */}
             <Picker
               selectedValue={selectedSpecialty}
               onValueChange={(itemValue) => setSelectedSpecialty(itemValue)}
@@ -166,7 +160,6 @@ export default function MapTabScreen() {
             </Picker>
 
             <View style={styles.modalButtonContainer}>
-              {/* Botón para cerrar el modal */}
               <TouchableOpacity
                 style={styles.modalCloseButton}
                 onPress={() => setIsModalVisible(false)}
@@ -174,7 +167,6 @@ export default function MapTabScreen() {
                 <Text style={styles.modalButtonText}>Cerrar</Text>
               </TouchableOpacity>
 
-              {/* Botón para buscar con la especialidad seleccionada */}
               <TouchableOpacity
                 style={styles.modalSearchButton}
                 onPress={() => {
@@ -185,7 +177,7 @@ export default function MapTabScreen() {
                         clinic.specialty === selectedSpecialty
                     )
                   );
-                  setIsModalVisible(false); // Cierra el modal después de aplicar el filtro
+                  setIsModalVisible(false); 
                 }}
               >
                 <Text style={styles.modalButtonText}>Buscar</Text>
@@ -263,7 +255,6 @@ export default function MapTabScreen() {
           <Ionicons name="locate" size={24} color="white" />
         </TouchableOpacity>
 
-        {/* Botón para abrir el filtro */}
         <TouchableOpacity
           style={styles.filterButton}
           onPress={() => setIsModalVisible(true)} 
@@ -310,7 +301,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 15, // Ajusta el margen inferior para alineación
+    marginBottom: 15, 
     textAlign: "center",
   },
   modalCloseButton: {
@@ -414,7 +405,7 @@ const styles = StyleSheet.create({
   },
   picker: {
     width: "100%",
-    height: 200, // Ajusta la altura para que no sea demasiado grande
+    height: 200,
     marginBottom: 15,
   },
 });
