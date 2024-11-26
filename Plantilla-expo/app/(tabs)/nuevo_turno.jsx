@@ -13,6 +13,7 @@ import {
 import Icono from 'react-native-vector-icons/Ionicons';
 import { Calendar } from 'react-native-calendars';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as DocumentPicker from 'expo-document-picker';
 
 const imagenesPorEspecialidad = {
   'Ginecología': require('../(tabs)/especialidad_imagenes/ginecologia.png'),
@@ -51,6 +52,28 @@ export default function NuevoTurno() {
     'Jueves': 4,
     'Viernes': 5,
     'Sábado': 6,
+  };
+
+  const seleccionarArchivo = async (doctorId) => {
+    try {
+      const archivo = await DocumentPicker.getDocumentAsync({
+        type: ['image/*', 'application/pdf'], // Permite imágenes y PDF
+      });
+  
+      if (archivo.type === 'success') {
+        console.log('Archivo seleccionado:', archivo);
+        Alert.alert(
+          'Éxito',
+          `Archivo "${archivo.name}" adjuntado correctamente para el doctor ID: ${doctorId}`
+        );
+        // Aquí puedes guardar la información del archivo si es necesario
+      } else {
+        console.log('Selección de archivo cancelada');
+      }
+    } catch (error) {
+      console.error('Error al seleccionar el archivo:', error);
+      Alert.alert('Error', 'No se pudo adjuntar el archivo.');
+    }
   };
 
   const getEspecialistas = async () => {
@@ -320,9 +343,13 @@ export default function NuevoTurno() {
                 <Text style={styles.nombreDoctor}>{item.nombre}</Text>
                 <Text style={styles.distanciaDoctor}>{item.distancia}</Text>
                 <View style={styles.conatinerBotones}>
-                  <TouchableOpacity style={styles.boton}>
-                    <Text style={styles.textoBoton}>Adjuntar</Text>
-                  </TouchableOpacity>
+                <TouchableOpacity
+  style={styles.boton}
+  onPress={() => seleccionarArchivo(item.id)}
+>
+  <Text style={styles.textoBoton}>Adjuntar</Text>
+</TouchableOpacity>
+
                   <TouchableOpacity
                     style={styles.boton}
                     onPress={() => seleccionarDoctor(item)}
