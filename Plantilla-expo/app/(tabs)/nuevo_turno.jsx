@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Alert,
   View,
@@ -9,78 +9,86 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-} from 'react-native';
-import Icono from 'react-native-vector-icons/Ionicons';
-import { Calendar } from 'react-native-calendars';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as DocumentPicker from 'expo-document-picker';
+} from "react-native";
+import Icono from "react-native-vector-icons/Ionicons";
+import { Calendar } from "react-native-calendars";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as DocumentPicker from "expo-document-picker";
 
 const imagenesPorEspecialidad = {
-  'Ginecología': require('../(tabs)/especialidad_imagenes/ginecologia.png'),
-  'Cardiología': require('../(tabs)/especialidad_imagenes/cardiologia.png'),
-  'Dermatología': require('../(tabs)/especialidad_imagenes/dermatologia.png'),
-  'Pediatría': require('../(tabs)/especialidad_imagenes/pediatria.png'),
-  'Fonoaudiología': require('../(tabs)/especialidad_imagenes/fonoaudiologia-removebg-preview.png'),
-  'Gastroenterología': require('../(tabs)/especialidad_imagenes/gastroenterologia-removebg-preview.png'),
-  'Neumonología': require('../(tabs)/especialidad_imagenes/neumonologia-removebg-preview.png'),
-  'Odontología': require('../(tabs)/especialidad_imagenes/odontologia-removebg-preview.png'),
-  'Oftalmología': require('../(tabs)/especialidad_imagenes/oftalmologia-removebg-preview.png'),
-  'Traumatología': require('../(tabs)/especialidad_imagenes/traumatologia-removebg-preview.png'),
-  'Urología': require('../(tabs)/especialidad_imagenes/urologia-removebg-preview.png'),
+  Ginecología: require("../(tabs)/especialidad_imagenes/ginecologia.png"),
+  Cardiología: require("../(tabs)/especialidad_imagenes/cardiologia.png"),
+  Dermatología: require("../(tabs)/especialidad_imagenes/dermatologia.png"),
+  Pediatría: require("../(tabs)/especialidad_imagenes/pediatria.png"),
+  Fonoaudiología: require("../(tabs)/especialidad_imagenes/fonoaudiologia-removebg-preview.png"),
+  Gastroenterología: require("../(tabs)/especialidad_imagenes/gastroenterologia-removebg-preview.png"),
+  Neumonología: require("../(tabs)/especialidad_imagenes/neumonologia-removebg-preview.png"),
+  Odontología: require("../(tabs)/especialidad_imagenes/odontologia-removebg-preview.png"),
+  Oftalmología: require("../(tabs)/especialidad_imagenes/oftalmologia-removebg-preview.png"),
+  Traumatología: require("../(tabs)/especialidad_imagenes/traumatologia-removebg-preview.png"),
+  Urología: require("../(tabs)/especialidad_imagenes/urologia-removebg-preview.png"),
 };
 
 export default function NuevoTurno() {
-  const [especialidadSeleccionada, setEspecialidadSeleccionada] = useState(null);
+  const [especialidadSeleccionada, setEspecialidadSeleccionada] =
+    useState(null);
   const [doctorSeleccionado, setDoctorSeleccionado] = useState(null);
   const [mostrarDoctores, setMostrarDoctores] = useState(false);
   const [mostrarCalendario, setMostrarCalendario] = useState(false);
-  const [titulo, setTitulo] = useState('Nuevo Turno');
+  const [titulo, setTitulo] = useState("Nuevo Turno");
   const [selectedDay, setSelectedDay] = useState(null);
-  const [selectedTime, setSelectedTime] = useState('');
+  const [selectedTime, setSelectedTime] = useState("");
   const [horasDisponibles, setHorasDisponibles] = useState([]);
   const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
   const [especialistas, setEspecialistas] = useState([]);
-  const [especialidadesDisponibles, setEspecialidadesDisponibles] = useState([]);
+  const [especialidadesDisponibles, setEspecialidadesDisponibles] = useState(
+    []
+  );
   const [diasHabilitados, setDiasHabilitados] = useState({});
-  const [busqueda, setBusqueda] = useState('');
+  const [busqueda, setBusqueda] = useState("");
 
   const nombreDiaANumero = {
-    'Domingo': 0,
-    'Lunes': 1,
-    'Martes': 2,
-    'Miércoles': 3,
-    'Jueves': 4,
-    'Viernes': 5,
-    'Sábado': 6,
+    Domingo: 0,
+    Lunes: 1,
+    Martes: 2,
+    Miércoles: 3,
+    Jueves: 4,
+    Viernes: 5,
+    Sábado: 6,
   };
-
 
   const getEspecialistas = async () => {
     try {
-      const response = await fetch('https://67310dbe7aaf2a9aff0fb8c5.mockapi.io/usuarios/especialista');
+      const response = await fetch(
+        "https://67310dbe7aaf2a9aff0fb8c5.mockapi.io/usuarios/especialista"
+      );
       const data = await response.json();
       setEspecialistas(data);
 
       if (data) {
-        const especialidadesUnicas = [...new Set(
-          data
-            .filter(especialista => especialista.activo)
-            .map(especialista => especialista.especialidad)
-        )];
+        const especialidadesUnicas = [
+          ...new Set(
+            data
+              .filter((especialista) => especialista.activo)
+              .map((especialista) => especialista.especialidad)
+          ),
+        ];
 
-        const especialidadesFormateadas = especialidadesUnicas.map((especialidad, index) => ({
-          id: String(index + 1),
-          especialidad: especialidad,
-          imagen: imagenesPorEspecialidad[especialidad] || null,
-        }));
+        const especialidadesFormateadas = especialidadesUnicas.map(
+          (especialidad, index) => ({
+            id: String(index + 1),
+            especialidad: especialidad,
+            imagen: imagenesPorEspecialidad[especialidad] || null,
+          })
+        );
 
         setEspecialidadesDisponibles(especialidadesFormateadas);
       } else {
-        alert('Fallo al obtener profesionales');
+        alert("Fallo al obtener profesionales");
       }
     } catch (error) {
       console.error(error);
-      alert('Error en la obtención de profesionales');
+      alert("Error en la obtención de profesionales");
     }
   };
 
@@ -95,18 +103,18 @@ export default function NuevoTurno() {
     for (let i = 0; i < 90; i++) {
       const fecha = new Date(hoy);
       fecha.setDate(hoy.getDate() + i);
-      const fechaStr = fecha.toISOString().split('T')[0];
+      const fechaStr = fecha.toISOString().split("T")[0];
       const diaSemana = fecha.getDay();
 
-      const esDiaHabilitado = diasAtencion.some(dia =>
-        nombreDiaANumero[dia] === diaSemana
+      const esDiaHabilitado = diasAtencion.some(
+        (dia) => nombreDiaANumero[dia] === diaSemana
       );
 
       if (esDiaHabilitado) {
         fechasHabilitadas[fechaStr] = {
           selected: false,
           marked: true,
-          dotColor: '#4CAF50',
+          dotColor: "#4CAF50",
           activeOpacity: 0,
           disableTouchEvent: false,
         };
@@ -114,7 +122,7 @@ export default function NuevoTurno() {
         fechasHabilitadas[fechaStr] = {
           disabled: true,
           disableTouchEvent: true,
-          textColor: '#d9e1e8',
+          textColor: "#d9e1e8",
           activeOpacity: 0,
         };
       }
@@ -124,15 +132,15 @@ export default function NuevoTurno() {
 
   const obtenerDoctoresPorEspecialidad = (especialidad) => {
     return especialistas
-      .filter(especialista =>
-        especialista.especialidad === especialidad &&
-        especialista.activo
+      .filter(
+        (especialista) =>
+          especialista.especialidad === especialidad && especialista.activo
       )
-      .map(especialista => ({
+      .map((especialista) => ({
         id: especialista.id,
         nombre: `Dr. ${especialista.name} ${especialista.apellido}`,
         diasAtencion: especialista.diasAtencion,
-        distancia: '0.5 km',
+        distancia: "0.5 km",
       }));
   };
 
@@ -151,9 +159,9 @@ export default function NuevoTurno() {
         hora > horaActual ||
         (hora === horaActual && minuto > minutoActual)
       ) {
-        const formatoHora = `${hora.toString().padStart(2, '0')}:${minuto
+        const formatoHora = `${hora.toString().padStart(2, "0")}:${minuto
           .toString()
-          .padStart(2, '0')}`;
+          .padStart(2, "0")}`;
         horarios.push(formatoHora);
       }
 
@@ -170,7 +178,7 @@ export default function NuevoTurno() {
   const onDayPress = (day) => {
     if (diasHabilitados[day.dateString]) {
       const nuevasFechas = { ...diasHabilitados };
-      Object.keys(nuevasFechas).forEach(fecha => {
+      Object.keys(nuevasFechas).forEach((fecha) => {
         if (nuevasFechas[fecha].selected) {
           nuevasFechas[fecha] = {
             ...nuevasFechas[fecha],
@@ -184,7 +192,7 @@ export default function NuevoTurno() {
       };
       setDiasHabilitados(nuevasFechas);
       setSelectedDay(day.dateString);
-      const hoy = new Date().toISOString().split('T')[0];
+      const hoy = new Date().toISOString().split("T")[0];
       const esHoy = day.dateString === hoy;
       setHorasDisponibles(generarHorarios(esHoy));
     }
@@ -201,12 +209,12 @@ export default function NuevoTurno() {
       setMostrarCalendario(false);
       setDoctorSeleccionado(null);
       setSelectedDay(null);
-      setSelectedTime('');
+      setSelectedTime("");
       setDiasHabilitados({});
     } else if (mostrarDoctores) {
       setMostrarDoctores(false);
       setEspecialidadSeleccionada(null);
-      setTitulo('Nuevo Turno');
+      setTitulo("Nuevo Turno");
     }
   };
 
@@ -216,7 +224,7 @@ export default function NuevoTurno() {
 
   const seleccionarDoctor = (doctor) => {
     setDoctorSeleccionado(doctor);
-    const doctorInfo = especialistas.find(esp => esp.id === doctor.id);
+    const doctorInfo = especialistas.find((esp) => esp.id === doctor.id);
     if (doctorInfo && doctorInfo.diasAtencion) {
       const diasHabilitados = generarDiasHabilitados(doctorInfo.diasAtencion);
       setDiasHabilitados(diasHabilitados);
@@ -239,70 +247,80 @@ export default function NuevoTurno() {
     };
 
     try {
-      const pacienteId = await AsyncStorage.getItem('userId');
-      console.log('PacienteId recuperado de AsyncStorage:', pacienteId);
+      const pacienteId = await AsyncStorage.getItem("userId");
+      console.log("PacienteId recuperado de AsyncStorage:", pacienteId);
 
       if (!pacienteId) {
-        console.error('Error: No se encontró el PacienteId en la sesión');
-        Alert.alert('Error', 'No se encontró el ID del paciente. Por favor, inicie sesión.');
+        console.error("Error: No se encontró el PacienteId en la sesión");
+        Alert.alert(
+          "Error",
+          "No se encontró el ID del paciente. Por favor, inicie sesión."
+        );
         return;
       }
 
       nuevoTurno.pacienteId = pacienteId;
 
-      console.log('Turno enviado al servidor:', nuevoTurno);
+      console.log("Turno enviado al servidor:", nuevoTurno);
 
-      const response = await fetch('https://672982836d5fa4901b6d6322.mockapi.io/api/bd/Turno', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(nuevoTurno),
-      });
+      const response = await fetch(
+        "https://672982836d5fa4901b6d6322.mockapi.io/api/bd/Turno",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(nuevoTurno),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Error al crear el turno');
+        throw new Error("Error al crear el turno");
       }
 
       const data = await response.json();
-      console.log('Turno creado correctamente:', data);
-      Alert.alert('Éxito', '¡Turno creado correctamente!');
+      console.log("Turno creado correctamente:", data);
+      Alert.alert("Éxito", "¡Turno creado correctamente!");
     } catch (error) {
-      console.error('Error al crear el turno:', error);
-      Alert.alert('Error', 'No se pudo guardar el turno.');
+      console.error("Error al crear el turno:", error);
+      Alert.alert("Error", "No se pudo guardar el turno.");
     }
   };
 
-  const especialidadesFiltradas = especialidadesDisponibles.filter(
-    esp => esp.especialidad.toLowerCase().includes(busqueda.toLowerCase())
+  const especialidadesFiltradas = especialidadesDisponibles.filter((esp) =>
+    esp.especialidad.toLowerCase().includes(busqueda.toLowerCase())
   );
-
 
   const seleccionarArchivo = async (doctorId) => {
     try {
       const archivo = await DocumentPicker.getDocumentAsync({
-        type: ['image/*', 'application/pdf'], 
+        type: ["image/*", "application/pdf"],
       });
-  
-      if (archivo.type === 'success') {
-        console.log('Archivo seleccionado:', archivo);
+
+      if (archivo.type === "success") {
+        console.log("Archivo seleccionado:", archivo);
         Alert.alert(
-          'Éxito',
+          "Éxito",
           `Archivo "${archivo.name}" adjuntado correctamente para el doctor ID: ${doctorId}`
         );
       } else {
-        console.log('Selección de archivo cancelada');
+        console.log("Selección de archivo cancelada");
       }
     } catch (error) {
-      console.error('Error al seleccionar el archivo:', error);
-      Alert.alert('Error', 'No se pudo adjuntar el archivo.');
+      console.error("Error al seleccionar el archivo:", error);
+      Alert.alert("Error", "No se pudo adjuntar el archivo.");
     }
   };
 
   return (
     <View style={styles.conatiner}>
       <View style={styles.header}>
-        <Icono name="chevron-back-outline" size={24} color="#000" onPress={atras} />
+        <Icono
+          name="chevron-back-outline"
+          size={24}
+          color="#000"
+          onPress={atras}
+        />
         <Text style={styles.titulo}>{titulo}</Text>
       </View>
 
@@ -326,16 +344,23 @@ export default function NuevoTurno() {
             >
               <View style={styles.contenidoTarjeta}>
                 {item.imagen && (
-                  <Image source={item.imagen} style={styles.imagenPlaceholder} />
+                  <Image
+                    source={item.imagen}
+                    style={styles.imagenPlaceholder}
+                  />
                 )}
-                <Text style={styles.textoEspecialidad}>{item.especialidad}</Text>
+                <Text style={styles.textoEspecialidad}>
+                  {item.especialidad}
+                </Text>
               </View>
             </TouchableOpacity>
           )}
         />
       ) : (
         <View style={styles.conatinerDoctores}>
-          <Text style={styles.tituloEspecialidad}>{especialidadSeleccionada}</Text>
+          <Text style={styles.tituloEspecialidad}>
+            {especialidadSeleccionada}
+          </Text>
           <FlatList
             data={obtenerDoctoresPorEspecialidad(especialidadSeleccionada)}
             keyExtractor={(item) => item.id}
@@ -344,12 +369,12 @@ export default function NuevoTurno() {
                 <Text style={styles.nombreDoctor}>{item.nombre}</Text>
                 <Text style={styles.distanciaDoctor}>{item.distancia}</Text>
                 <View style={styles.conatinerBotones}>
-                <TouchableOpacity
-  style={styles.boton}
-  onPress={() => seleccionarArchivo(item.id)}
->
-  <Text style={styles.textoBoton}>Adjuntar</Text>
-</TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.boton}
+                    onPress={() => seleccionarArchivo(item.id)}
+                  >
+                    <Text style={styles.textoBoton}>Adjuntar</Text>
+                  </TouchableOpacity>
 
                   <TouchableOpacity
                     style={styles.boton}
@@ -377,20 +402,20 @@ export default function NuevoTurno() {
               </TouchableOpacity>
             </View>
             <Calendar
-              current={new Date().toISOString().split('T')[0]}
-              minDate={new Date().toISOString().split('T')[0]}
+              current={new Date().toISOString().split("T")[0]}
+              minDate={new Date().toISOString().split("T")[0]}
               markedDates={diasHabilitados}
               onDayPress={onDayPress}
-              monthFormat={'MMMM yyyy'}
+              monthFormat={"MMMM yyyy"}
               disableAllTouchEventsForDisabledDays={true}
               theme={{
-                textDisabledColor: '#d9e1e8',
-                selectedDayBackgroundColor: '#4CAF50',
-                selectedDayTextColor: '#ffffff',
-                todayTextColor: '#4CAF50',
-                dayTextColor: '#2d4150',
-                textMonthFontWeight: 'bold',
-                arrowColor: '#4CAF50',
+                textDisabledColor: "#d9e1e8",
+                selectedDayBackgroundColor: "#4CAF50",
+                selectedDayTextColor: "#ffffff",
+                todayTextColor: "#4CAF50",
+                dayTextColor: "#2d4150",
+                textMonthFontWeight: "bold",
+                arrowColor: "#4CAF50",
               }}
             />
           </View>
@@ -401,7 +426,9 @@ export default function NuevoTurno() {
         <View style={styles.overlay}>
           <View style={styles.conatinerHoras}>
             <View style={styles.headerHoras}>
-              <Text style={styles.textoSeleccionHorario}>Seleccione horario</Text>
+              <Text style={styles.textoSeleccionHorario}>
+                Seleccione horario
+              </Text>
               <TouchableOpacity
                 onPress={() => setSelectedDay(null)}
                 style={styles.botonCerrarHoras}
@@ -433,22 +460,22 @@ export default function NuevoTurno() {
               Verifique su Nuevo Turno
             </Text>
             <Text style={styles.textoConfirmacion}>
-              {'\n'}
+              {"\n"}
               Especialidad: {especialidadSeleccionada}
-              {'\n'}
+              {"\n"}
               Doctor: {doctorSeleccionado.nombre}
-              {'\n'}
+              {"\n"}
               Fecha: {selectedDay}
-              {'\n'}
+              {"\n"}
               Hora: {selectedTime}
             </Text>
-            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+            <View style={{ flexDirection: "row", justifyContent: "center" }}>
               <TouchableOpacity
                 onPress={() => {
                   setMostrarConfirmacion(false);
                   setSelectedDay(null);
                   setDoctorSeleccionado(null);
-                  setSelectedTime('');
+                  setSelectedTime("");
                   setEspecialidadSeleccionada(null);
                   setMostrarDoctores(false);
                   setMostrarCalendario(false);
@@ -456,9 +483,14 @@ export default function NuevoTurno() {
                   crearTurno();
 
                   Alert.alert(
-                    'Confirmación de Turno',
-                    '¡SU TURNO HA SIDO GUARDADO EXITOSAMENTE!',
-                    [{ text: 'OK', onPress: () => console.log('Turno guardado') }]
+                    "Confirmación de Turno",
+                    "¡SU TURNO HA SIDO GUARDADO EXITOSAMENTE!",
+                    [
+                      {
+                        text: "OK",
+                        onPress: () => console.log("Turno guardado"),
+                      },
+                    ]
                   );
                 }}
                 style={styles.botonConfirmar}
@@ -484,11 +516,11 @@ export default function NuevoTurno() {
 const styles = StyleSheet.create({
   conatiner: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 16,
   },
   titulo: {
@@ -499,7 +531,7 @@ const styles = StyleSheet.create({
   },
   inputBusqueda: {
     height: 40,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderWidth: 1,
     margin: 16,
     paddingHorizontal: 8,
@@ -509,11 +541,11 @@ const styles = StyleSheet.create({
     flex: 1,
     margin: 8,
     borderRadius: 8,
-    overflow: 'hidden',
-    backgroundColor: '#f5f5f5',
+    overflow: "hidden",
+    backgroundColor: "#f5f5f5",
   },
   contenidoTarjeta: {
-    alignItems: 'center',
+    alignItems: "center",
     padding: 16,
   },
   imagenPlaceholder: {
@@ -523,7 +555,7 @@ const styles = StyleSheet.create({
   },
   textoEspecialidad: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   conatinerDoctores: {
     flex: 1,
@@ -531,97 +563,97 @@ const styles = StyleSheet.create({
   },
   tituloEspecialidad: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 16,
   },
   tarjetaDoctor: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
     padding: 16,
     borderRadius: 8,
     marginBottom: 16,
   },
   nombreDoctor: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   distanciaDoctor: {
     fontSize: 14,
-    color: '#888',
+    color: "#888",
     marginBottom: 8,
   },
   conatinerBotones: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   boton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: "#4CAF50",
     padding: 8,
     borderRadius: 8,
     flex: 1,
     marginHorizontal: 4,
   },
   textoBoton: {
-    color: '#fff',
-    textAlign: 'center',
+    color: "#fff",
+    textAlign: "center",
   },
   overlay: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   conatinerCalendario: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 16,
     borderRadius: 8,
-    width: '90%',
+    width: "90%",
   },
   conatinerHoras: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 16,
     borderRadius: 8,
-    width: '80%',
-    height: '50%', 
+    width: "80%",
+    height: "50%",
   },
   headerHoras: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   textoSeleccionHorario: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   botonCerrar: {
     padding: 8,
   },
   textoBotonCerrar: {
-    color: '#007AFF',
+    color: "#007AFF",
     fontSize: 16,
   },
   botonHora: {
     padding: 12,
-    backgroundColor: '#4CAF50',
+    backgroundColor: "#4CAF50",
     borderRadius: 8,
     marginBottom: 8,
   },
   textoHora: {
-    color: '#fff',
-    textAlign: 'center',
+    color: "#fff",
+    textAlign: "center",
     fontSize: 16,
   },
   modal: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 24,
     borderRadius: 8,
-    width: '80%',
+    width: "80%",
   },
   tituloConfirmacion: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 16,
   },
   textoConfirmacion: {
@@ -629,20 +661,20 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   botonConfirmar: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: "#4CAF50",
     padding: 12,
     borderRadius: 8,
     marginHorizontal: 4,
   },
   botonAtras: {
-    backgroundColor: '#007AFF',
+    backgroundColor: "#007AFF",
     padding: 12,
     borderRadius: 8,
     marginHorizontal: 4,
   },
   textoBotonBlanco: {
-    color: '#fff',
-    textAlign: 'center',
+    color: "#fff",
+    textAlign: "center",
     fontSize: 16,
   },
 });
