@@ -11,7 +11,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useNavigation } from "@react-navigation/native";
 import { useUser } from '../context/userContext';
 import { useRouter } from 'expo-router';
-import RNRestart from 'react-native-restart';
+//import RNRestart from 'react-native-restart';
 
 export default function TabProfile() {
   const [turnos, setTurnos] = useState([]);

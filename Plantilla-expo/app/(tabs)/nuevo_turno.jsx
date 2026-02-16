@@ -15,17 +15,17 @@ import { Calendar } from 'react-native-calendars';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const imagenesPorEspecialidad = {
-  'Ginecología': require('../(tabs)/especialidad_imagenes/ginecologia.png'),
-  'Cardiología': require('../(tabs)/especialidad_imagenes/cardiologia.png'),
-  'Dermatología': require('../(tabs)/especialidad_imagenes/dermatologia.png'),
-  'Pediatría': require('../(tabs)/especialidad_imagenes/pediatria.png'),
-  'Fonoaudiología': require('../(tabs)/especialidad_imagenes/fonoaudiologia-removebg-preview.png'),
-  'Gastroenterología': require('../(tabs)/especialidad_imagenes/gastroenterologia-removebg-preview.png'),
-  'Neumonología': require('../(tabs)/especialidad_imagenes/neumonologia-removebg-preview.png'),
-  'Odontología': require('../(tabs)/especialidad_imagenes/odontologia-removebg-preview.png'),
-  'Oftalmología': require('../(tabs)/especialidad_imagenes/oftalmologia-removebg-preview.png'),
-  'Traumatología': require('../(tabs)/especialidad_imagenes/traumatologia-removebg-preview.png'),
-  'Urología': require('../(tabs)/especialidad_imagenes/urologia-removebg-preview.png'),
+  'Ginecología': require('./especialidad_imagenes/ginecologia.png'),
+  'Cardiología': require('./especialidad_imagenes/cardiologia.png'),
+  'Dermatología': require('./especialidad_imagenes/dermatologia.png'),
+  'Pediatría': require('./especialidad_imagenes/pediatria.png'),
+  'Fonoaudiología': require('./especialidad_imagenes/fonoaudiologia-removebg-preview.png'),
+  'Gastroenterología': require('./especialidad_imagenes/gastroenterologia-removebg-preview.png'),
+  'Neumonología': require('./especialidad_imagenes/neumonologia-removebg-preview.png'),
+  'Odontología': require('./especialidad_imagenes/odontologia-removebg-preview.png'),
+  'Oftalmología': require('./especialidad_imagenes/oftalmologia-removebg-preview.png'),
+  'Traumatología': require('./especialidad_imagenes/traumatologia-removebg-preview.png'),
+  'Urología': require('./especialidad_imagenes/urologia-removebg-preview.png'),
 };
 
 export default function NuevoTurno() {

@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Modal,
 } from "react-native";
-import MapView, { Marker, Callout } from "react-native-maps";
+//import MapView, { Marker, Callout } from "react-native-maps";
 import * as Location from "expo-location";
 import * as Linking from "expo-linking";
 import { Ionicons } from "@expo/vector-icons";
