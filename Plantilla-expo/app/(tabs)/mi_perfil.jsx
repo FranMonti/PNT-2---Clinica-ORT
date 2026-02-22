@@ -11,7 +11,6 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useNavigation } from "@react-navigation/native";
 import { useUser } from '../context/userContext';
 import { useRouter } from 'expo-router';
-//import RNRestart from 'react-native-restart';
 
 export default function TabProfile() {
   const [turnos, setTurnos] = useState([]);
@@ -20,9 +19,6 @@ export default function TabProfile() {
   const navigation = useNavigation();
   const router = useRouter();
   const { user, clearUser } = useUser();
-  const restartApp = () => {
-    RNRestart.Restart(); 
-  };
 
   useFocusEffect(
     useCallback(() => {
@@ -116,8 +112,9 @@ export default function TabProfile() {
   const handleLogout = async () => {
     console.log('entro a handle logout');
     await clearUser(); 
-    console.log('router:', router.navigate);
-    restartApp();
+    //console.log('router:', router.navigate);
+    //restartApp();
+    router.replace("/");
   };
 
   if (!user) {

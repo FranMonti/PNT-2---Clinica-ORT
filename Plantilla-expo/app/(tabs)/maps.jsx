@@ -196,68 +196,14 @@ export default function MapTabScreen() {
       </Modal>
 
       <View style={styles.container}>
-        <MapView
-          ref={mapRef}
-          style={styles.map}
-          region={
-            location
-              ? {
-                  latitude: location.latitude,
-                  longitude: location.longitude,
-                  latitudeDelta: 0.005,
-                  longitudeDelta: 0.005,
-                }
-              : undefined
-          }
-          showsUserLocation={true}
-        >
-          {location && (
-            <Marker
-              coordinate={{
-                latitude: location.latitude,
-                longitude: location.longitude,
-              }}
-              title="Mi ubicación"
-            />
-          )}
-
-          {filteredClinics.map((clinic) => (
-            <Marker
-              key={clinic.id}
-              coordinate={{
-                latitude: clinic.latitude,
-                longitude: clinic.longitude,
-              }}
-              title={clinic.title}
-              ref={(ref) => (clinicRefs.current[clinic.id] = ref)}
-            >
-              <Ionicons name="medical" size={28} color="red" />
-              <Callout tooltip>
-                <View style={styles.callout}>
-                  <Text style={styles.calloutTitle}>{clinic.title}</Text>
-                  <Text>Especialidad: {clinic.specialty}</Text>
-                  <Text>Horario: {clinic.hours}</Text>
-                  <View style={styles.buttonContainer}>
-                    <TouchableOpacity
-                      style={styles.closeButton}
-                      onPress={() =>
-                        clinicRefs.current[clinic.id]?.hideCallout()
-                      }
-                    >
-                      <Text style={styles.buttonText}>Cerrar</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.navigateButton}
-                      onPress={() => navigateToClinic(clinic)}
-                    >
-                      <Text style={styles.buttonText}>Ir</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </Callout>
-            </Marker>
-          ))}
-        </MapView>
+        <View style={[styles.map, { justifyContent: 'center', alignItems: 'center' }]}>
+          <Text style={{ fontSize: 18, color: '#666', marginBottom: 20 }}>
+            Mapa de clínicas
+          </Text>
+          <Text style={{ fontSize: 14, color: '#999', textAlign: 'center', paddingHorizontal: 20 }}>
+            Para utilizar el mapa, ejecuta la app en iOS o Android.
+          </Text>
+        </View>
 
         <TouchableOpacity style={styles.centerButton} onPress={centerMap}>
           <Ionicons name="locate" size={24} color="white" />
